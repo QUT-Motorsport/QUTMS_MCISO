@@ -1,0 +1,3 @@
+[submodule "hardware/QUTMS_Altium_Common"]
+	path = hardware/QUTMS_Altium_Common
+	url = https://github.com/QUT-Motorsport/QUTMS_Altium_Common.git
