@@ -7,8 +7,3 @@ Record=SheetSymbol|SourceDocument=MCISO-S01-V00-Master.SchDoc|Designator=U_USB-C
 Record=SheetSymbol|SourceDocument=MCISO-S01-V00-Master.SchDoc|Designator=U_VCU-S02-V00-12VProtection|SchDesignator=U_VCU-S02-V00-12VProtection|FileName=VCU-S02-V00-12VProtection.SchDoc|SheetNumber=6|SymbolType=Normal|RawFileName=VCU-S02-V00-12VProtection.SchDoc|DesignItemId= |SourceLibraryName= |ObjectKind=Sheet Symbol|RevisionGUID= |ItemGUID= |VaultGUID= 
 Record=SheetSymbol|SourceDocument=MCISO-S01-V00-Master.SchDoc|Designator=U_VCU-S03-V00-PSU3V3|SchDesignator=U_VCU-S03-V00-PSU3V3|FileName=VCU-S03-V00-PSU3V3.SchDoc|SheetNumber=7|SymbolType=Normal|RawFileName=VCU-S03-V00-PSU3V3.SchDoc|DesignItemId= |SourceLibraryName= |ObjectKind=Sheet Symbol|RevisionGUID= |ItemGUID= |VaultGUID= 
 Record=SheetSymbol|SourceDocument=MCISO-S01-V00-Master.SchDoc|Designator=U_VCU-S04-V00-PSU5V|SchDesignator=U_VCU-S04-V00-PSU5V|FileName=VCU-S04-V00-PSU5V.SchDoc|SheetNumber=8|SymbolType=Normal|RawFileName=VCU-S04-V00-PSU5V.SchDoc|DesignItemId= |SourceLibraryName= |ObjectKind=Sheet Symbol|RevisionGUID= |ItemGUID= |VaultGUID= 
-Record=NoMainPathDocument|SourceDocument=MCISO-S01-V00-Master.SchDoc|FileName=Component_from_magic.SchDoc|SheetNumber=14
-Record=NoMainPathDocument|SourceDocument=MCISO-S01-V00-Master.SchDoc|FileName=MCISO-S02-V00-PSU5VA.SchDoc|SheetNumber=10
-Record=NoMainPathDocument|SourceDocument=MCISO-S01-V00-Master.SchDoc|FileName=MCISO-S03-V00-PSU5VB.SchDoc|SheetNumber=11
-Record=NoMainPathDocument|SourceDocument=MCISO-S01-V00-Master.SchDoc|FileName=MCISO-S06-V00-PSU3V3.SchDoc|SheetNumber=12
-Record=NoMainPathDocument|SourceDocument=MCISO-S01-V00-Master.SchDoc|FileName=MX120G.SchDoc|SheetNumber=13

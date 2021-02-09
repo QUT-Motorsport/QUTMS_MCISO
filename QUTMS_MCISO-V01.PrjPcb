@@ -125,23 +125,6 @@ GenerateClassCluster=0
 DocumentUniqueId=NFOALMYO
 
 [Document6]
-DocumentPath=..\..\..\QUTMS_AMS\Hardware\AMU-S04-V00-Microcontroller.Harness
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotationIndexControlEnabled=0
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=-1
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=1
-ClassGenNCAutoScope=None
-DItemRevisionGUID=
-GenerateClassCluster=0
-DocumentUniqueId=
-
-[Document7]
 DocumentPath=AMU-S04-V00-Microcontroller.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -158,7 +141,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document8]
+[Document7]
 DocumentPath=MCISO-S05-V00-CANIsolation.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -175,7 +158,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document9]
+[Document8]
 DocumentPath=MCISO-S07-V00-CANMain.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -192,24 +175,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=GTNADHUQ
 
-[Document10]
-DocumentPath=..\..\..\QUTMS_AMS\Hardware\AMU-S05-V00-CAN2.Harness
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotationIndexControlEnabled=0
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=-1
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=1
-ClassGenNCAutoScope=None
-DItemRevisionGUID=
-GenerateClassCluster=0
-DocumentUniqueId=
-
-[Document11]
+[Document9]
 DocumentPath=MCISO-S08-V00-HallDifferentials.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -226,24 +192,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=WQOQHGJP
 
-[Document12]
-DocumentPath=..\..\..\QUTMS_AMS\Hardware\MCISO-S07-V00-CANMain.Harness
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotationIndexControlEnabled=0
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=-1
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=1
-ClassGenNCAutoScope=None
-DItemRevisionGUID=
-GenerateClassCluster=0
-DocumentUniqueId=
-
-[Document13]
+[Document10]
 DocumentPath=MCISO-S04-V00-Microcontroller.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -260,7 +209,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document14]
+[Document11]
 DocumentPath=MCISO-S07-V00-CANMain.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -277,7 +226,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document15]
+[Document12]
 DocumentPath=MCISO-P01-V00.PcbDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -294,7 +243,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=GJRSFAMN
 
-[Document16]
+[Document13]
 DocumentPath=got it from tom\VCU-S02-V00-12VProtection.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -311,7 +260,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=EEIMOJGL
 
-[Document17]
+[Document14]
 DocumentPath=got it from tom\VCU-S02-V00-12VProtection.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -328,7 +277,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document18]
+[Document15]
 DocumentPath=got it from tom\VCU-S03-V00-PSU3V3.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -345,7 +294,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=ARFZYJCE
 
-[Document19]
+[Document16]
 DocumentPath=got it from tom\VCU-S04-V00-PSU5V.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -362,7 +311,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=QOTCNBKY
 
-[Document20]
+[Document17]
 DocumentPath=got it from tom\USB-C Protection.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -379,7 +328,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=YWNXWWNR
 
-[Document21]
+[Document18]
 DocumentPath=got it from tom\USB-C Protection.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -396,7 +345,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document22]
+[Document19]
 DocumentPath=MCISO-S01-V00-Master.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
