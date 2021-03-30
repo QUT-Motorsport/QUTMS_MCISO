@@ -91,7 +91,7 @@ GenerateClassCluster=0
 DocumentUniqueId=YWMSGQFK
 
 [Document4]
-DocumentPath=..\GotItFromTom\MCISO-S02-V00-12VProtection.SchDoc
+DocumentPath=MCISO-S02-V00-12VProtection.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
@@ -125,7 +125,7 @@ GenerateClassCluster=0
 DocumentUniqueId=STYNTWSO
 
 [Document6]
-DocumentPath=..\GotItFromTom\MCISO-S05-V00-CANIsolation.SchDoc
+DocumentPath=MCISO-S05-V00-CANIsolation.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
@@ -142,7 +142,7 @@ GenerateClassCluster=0
 DocumentUniqueId=UYOVFGQR
 
 [Document7]
-DocumentPath=..\..\..\..\Downloads\MCISO-S07-V00-Master-PSU3V3-300mA.SchDoc
+DocumentPath=MCISO-S07-V00-Master-PSU3V3-300mA.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
