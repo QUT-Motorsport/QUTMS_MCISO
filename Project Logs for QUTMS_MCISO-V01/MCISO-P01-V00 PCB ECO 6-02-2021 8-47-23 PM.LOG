@@ -1,0 +1,471 @@
+Added Component: Designator=C1(Cap_Ceramic_1206)
+Added Component: Designator=C2(Cap_Ceramic_1206)
+Added Component: Designator=C3(Cap_Ceramic_0603)
+Added Component: Designator=C4(Cap_Ceramic_0603)
+Added Component: Designator=C5(Cap_Ceramic_0603)
+Added Component: Designator=C6(Cap_Ceramic_0603)
+Added Component: Designator=C7(Cap_Ceramic_0603)
+Added Component: Designator=C8(Cap_Ceramic_0603)
+Added Component: Designator=C9(Cap_Ceramic_0603)
+Added Component: Designator=C10(Cap_Ceramic_0603)
+Added Component: Designator=C11(Cap_Ceramic_0603)
+Added Component: Designator=C12(Cap_Ceramic_0603)
+Added Component: Designator=C13(Cap_Ceramic_0603)
+Added Component: Designator=C14(Cap_Ceramic_1206)
+Added Component: Designator=C15(Cap_Ceramic_0603)
+Added Component: Designator=Cboot1(Cap_Ceramic_0603)
+Added Component: Designator=Cboot2(Cap_Ceramic_0603)
+Added Component: Designator=Cin1(Cap_Ceramic_1206)
+Added Component: Designator=Cin2(Cap_Ceramic_1206)
+Added Component: Designator=Cin3(Cap_Ceramic_1206)
+Added Component: Designator=Connector_U_MX120G1(MX120G)
+Added Component: Designator=Connector_U_MX120G2(MX120G)
+Added Component: Designator=Connector_U_MX120G3(MX120G)
+Added Component: Designator=Connector_U_MX120G4(MX120G)
+Added Component: Designator=Connector_U_MX120G5(MX120G)
+Added Component: Designator=D1(SMA)
+Added Component: Designator=D2(SMA)
+Added Component: Designator=D3(NUP2105L)
+Add component (AddParameter): Name = "ComponentLink1Description"; Value = "Datasheet"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink1URL"; Value = "https://www.onsemi.cn/PowerSolutions/document/NUP2105L-D.PDF"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink2Description"; Value = "LCSC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink2URL"; Value = "https://lcsc.com/product-detail/TVS_ON-Semiconductor-NUP2105LT1G_C14486.html"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink3Description"; Value = "Digikey"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink3URL"; Value = "https://www.digikey.com.au/product-detail/en/on-semiconductor/SZNUP2105LT1G/SZNUP2105LT1GOSCT-ND/3487669"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Parameter 1"; Value = ""; VariantName = "[No Variations]"
+Added Component: Designator=D4(SMA)
+Added Component: Designator=D5(NUP2105L)
+Add component (AddParameter): Name = "ComponentLink1Description"; Value = "Datasheet"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink1URL"; Value = "https://www.onsemi.cn/PowerSolutions/document/NUP2105L-D.PDF"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink2Description"; Value = "LCSC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink2URL"; Value = "https://lcsc.com/product-detail/TVS_ON-Semiconductor-NUP2105LT1G_C14486.html"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink3Description"; Value = "Digikey"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink3URL"; Value = "https://www.digikey.com.au/product-detail/en/on-semiconductor/SZNUP2105LT1G/SZNUP2105LT1GOSCT-ND/3487669"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Parameter 1"; Value = ""; VariantName = "[No Variations]"
+Added Component: Designator=DS1(LED BLUE 0603)
+Added Component: Designator=DS2(LED BLUE 0603)
+Added Component: Designator=DS3(LED ORANGE 0603)
+Added Component: Designator=DS4(LED ORANGE 0603)
+Added Component: Designator=DS5(LED BLUE 0603)
+Added Component: Designator=DS6(LED BLUE 0603)
+Added Component: Designator=J2(JST PH 4x RIGHT COMB)
+Added Component: Designator=J6(Jumper_2Way_Pin)
+Added Component: Designator=J7(Jumper_2Way_Pin)
+Added Component: Designator=J8(Jumper_2Way_Pin)
+Added Component: Designator=J9(IDC 1.27MM 10P)
+Added Component: Designator=J10(Jumper_2Way_Pin)
+Added Component: Designator=J11(Jumper_2Way_Pin)
+Added Component: Designator=J12(Jumper_2Way_Pin)
+Added Component: Designator=R1(Res_ThinFilm_0603)
+Added Component: Designator=R2(Res_ThinFilm_0603)
+Added Component: Designator=R3(Res_ThinFilm_0603)
+Added Component: Designator=R4(Res_ThinFilm_0603)
+Added Component: Designator=R5(Res_ThinFilm_0603)
+Added Component: Designator=R6(Res_ThinFilm_1210)
+Added Component: Designator=R7(Res_ThinFilm_0603)
+Added Component: Designator=R8(Res_ThinFilm_0603)
+Added Component: Designator=R9(Res_ThinFilm_0603)
+Added Component: Designator=R10(Res_ThinFilm_0603)
+Added Component: Designator=R11(Res_ThinFilm_0603)
+Added Component: Designator=R12(Res_ThinFilm_0603)
+Added Component: Designator=R13(Res_ThinFilm_0603)
+Added Component: Designator=R14(Res_ThinFilm_1210)
+Added Component: Designator=Rfbb1(Res_ThinFilm_0603)
+Added Component: Designator=SW1(BTN B3U-1000P)
+Add component (AddParameter): Name = "ComponentLink1Description"; Value = "LCSC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink1URL"; Value = "https://lcsc.com/product-detail/Tactile-Switches_BRIGHT-TSA063G50-250_C294565.html"; VariantName = "[No Variations]"
+Added Component: Designator=TP1(TestPointSMD)
+Added Component: Designator=TP2(TestPointSMD)
+Added Component: Designator=TP3(TestPointSMD)
+Added Component: Designator=TP4(TestPointSMD)
+Added Component: Designator=TP5(TestPointSMD)
+Added Component: Designator=TP6(TestPointSMD)
+Added Component: Designator=TP7(TestPointSMD)
+Added Component: Designator=TP8(TestPointSMD)
+Added Component: Designator=TP9(TestPointSMD)
+Added Component: Designator=TP10(TestPointSMD)
+Added Component: Designator=U1(LMR14010)
+Added Component: Designator=U2(LMR14010)
+Added Component: Designator=U3(Si8621BC-B-IS)
+Add component (AddParameter): Name = "ComponentLink1Description"; Value = "Digikey"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink1URL"; Value = "https://www.digikey.com.au/product-detail/en/silicon-labs/SI8621BC-B-ISR/336-4774-1-ND/8611005"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink2Description"; Value = "Datasheet"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink2URL"; Value = "https://www.silabs.com/documents/public/data-sheets/si861x-2x-datasheet.pdf"; VariantName = "[No Variations]"
+Added Component: Designator=U4(SN65HVD233DR)
+Add component (AddParameter): Name = "ComponentLink1Description"; Value = "LCSC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink1URL"; Value = "https://lcsc.com/product-detail/CAN-ICs_Texas-Instruments_SN65HVD233DRG4_Texas-Instruments-Texas-Instruments-SN65HVD233DRG4_C61643.html"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink2Description"; Value = "Digikey"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink2URL"; Value = "https://www.digikey.com.au/product-detail/en/texas-instruments/SN65HVD233DR/296-35967-1-ND/4134960"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink3Description"; Value = "Datasheet"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink3URL"; Value = "https://www.ti.com/lit/ds/symlink/sn65hvd233.pdf?ts=1588560888178"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink4Description"; Value = "Ti Product Page"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink4URL"; Value = "https://www.ti.com/product/SN65HVD233"; VariantName = "[No Variations]"
+Added Component: Designator=U5(STM32F105RC)
+Add component (AddParameter): Name = "ComponentLink1Description"; Value = "Digikey"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink1URL"; Value = "https://www.digikey.com.au/product-detail/en/stmicroelectronics/STM32F105RCT6TR/497-17397-1-ND/8024118"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink2Description"; Value = "Datasheet"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink2URL"; Value = "https://www.st.com/content/ccc/resource/technical/document/datasheet/e4/f3/1a/89/5a/02/46/ae/CD00220364.pdf/files/CD00220364.pdf/jcr:content/translations/en.CD00220364.pdf"; VariantName = "[No Variations]"
+Added Component: Designator=U6(DSC1001DI1-008.0000TCT-ND)
+Added Component: Designator=U7(LMR14010)
+Added Component: Designator=U8(SN65HVD233DR)
+Add component (AddParameter): Name = "ComponentLink1Description"; Value = "LCSC"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink1URL"; Value = "https://lcsc.com/product-detail/CAN-ICs_Texas-Instruments_SN65HVD233DRG4_Texas-Instruments-Texas-Instruments-SN65HVD233DRG4_C61643.html"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink2Description"; Value = "Digikey"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink2URL"; Value = "https://www.digikey.com.au/product-detail/en/texas-instruments/SN65HVD233DR/296-35967-1-ND/4134960"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink3Description"; Value = "Datasheet"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink3URL"; Value = "https://www.ti.com/lit/ds/symlink/sn65hvd233.pdf?ts=1588560888178"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink4Description"; Value = "Ti Product Page"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "ComponentLink4URL"; Value = "https://www.ti.com/product/SN65HVD233"; VariantName = "[No Variations]"
+Added Pin To Net: NetName=GND Pin=C1-1
+Added Pin To Net: NetName=5V Pin=C1-2
+Added Pin To Net: NetName=GND Pin=C2-1
+Added Pin To Net: NetName=3V3 Pin=C2-2
+Added Pin To Net: NetName=ISO GND Pin=C3-1
+Added Pin To Net: NetName=ISO 3V3 Pin=C3-2
+Added Pin To Net: NetName=GND Pin=C4-1
+Added Pin To Net: NetName=3V3 Pin=C4-2
+Added Pin To Net: NetName=ISO GND Pin=C5-1
+Added Pin To Net: NetName=ISO 3V3 Pin=C5-2
+Added Pin To Net: NetName=GND Pin=C6-1
+Added Pin To Net: NetName=3V3 Pin=C6-2
+Added Pin To Net: NetName=GND Pin=C7-1
+Added Pin To Net: NetName=3V3 Pin=C7-2
+Added Pin To Net: NetName=GND Pin=C8-1
+Added Pin To Net: NetName=3V3 Pin=C8-2
+Added Pin To Net: NetName=GND Pin=C9-1
+Added Pin To Net: NetName=3V3 Pin=C9-2
+Added Pin To Net: NetName=GND Pin=C10-1
+Added Pin To Net: NetName=3V3 Pin=C10-2
+Added Pin To Net: NetName=GND Pin=C11-1
+Added Pin To Net: NetName=3V3 Pin=C11-2
+Added Pin To Net: NetName=GND Pin=C12-1
+Added Pin To Net: NetName=NRST Pin=C12-2
+Added Pin To Net: NetName=NetC13_1 Pin=C13-1
+Added Pin To Net: NetName=NetC13_2 Pin=C13-2
+Added Pin To Net: NetName=ISO GND A Pin=C14-1
+Added Pin To Net: NetName=ISO 5V A Pin=C14-2
+Added Pin To Net: NetName=GND Pin=C15-1
+Added Pin To Net: NetName=3V3 Pin=C15-2
+Added Pin To Net: NetName=NetCboot1_1 Pin=Cboot1-1
+Added Pin To Net: NetName=NetCboot1_2 Pin=Cboot1-2
+Added Pin To Net: NetName=NetCboot2_1 Pin=Cboot2-1
+Added Pin To Net: NetName=NetCboot2_2 Pin=Cboot2-2
+Added Pin To Net: NetName=GND Pin=Cin1-1
+Added Pin To Net: NetName=12V Pin=Cin1-2
+Added Pin To Net: NetName=GND Pin=Cin2-1
+Added Pin To Net: NetName=12V Pin=Cin2-2
+Added Pin To Net: NetName=ISO GND A Pin=Cin3-1
+Added Pin To Net: NetName=ISO 12VA Pin=Cin3-2
+Added Pin To Net: NetName=GND Pin=Connector_U_MX120G1-3
+Added Pin To Net: NetName=GND Pin=Connector_U_MX120G1-6
+Added Pin To Net: NetName=GND Pin=Connector_U_MX120G1-9
+Added Pin To Net: NetName=GND Pin=Connector_U_MX120G1-12
+Added Pin To Net: NetName=GND Pin=Connector_U_MX120G2-3
+Added Pin To Net: NetName=GND Pin=Connector_U_MX120G2-6
+Added Pin To Net: NetName=GND Pin=Connector_U_MX120G2-9
+Added Pin To Net: NetName=GND Pin=Connector_U_MX120G2-12
+Added Pin To Net: NetName=GND Pin=Connector_U_MX120G3-3
+Added Pin To Net: NetName=GND Pin=Connector_U_MX120G3-6
+Added Pin To Net: NetName=GND Pin=Connector_U_MX120G3-9
+Added Pin To Net: NetName=GND Pin=Connector_U_MX120G3-12
+Added Pin To Net: NetName=GND Pin=Connector_U_MX120G4-3
+Added Pin To Net: NetName=GND Pin=Connector_U_MX120G4-6
+Added Pin To Net: NetName=GND Pin=Connector_U_MX120G4-9
+Added Pin To Net: NetName=GND Pin=Connector_U_MX120G4-12
+Added Pin To Net: NetName=GND Pin=Connector_U_MX120G5-3
+Added Pin To Net: NetName=GND Pin=Connector_U_MX120G5-6
+Added Pin To Net: NetName=GND Pin=Connector_U_MX120G5-9
+Added Pin To Net: NetName=GND Pin=Connector_U_MX120G5-12
+Added Pin To Net: NetName=GND Pin=D1-A
+Added Pin To Net: NetName=NetCboot1_1 Pin=D1-K
+Added Pin To Net: NetName=GND Pin=D2-A
+Added Pin To Net: NetName=NetCboot2_1 Pin=D2-K
+Added Pin To Net: NetName=CAN L Pin=D3-1
+Added Pin To Net: NetName=CAN H Pin=D3-2
+Added Pin To Net: NetName=ISO GND Pin=D3-3
+Added Pin To Net: NetName=GND Pin=D4-A
+Added Pin To Net: NetName=NetC13_1 Pin=D4-K
+Added Pin To Net: NetName=CAN MAIN L Pin=D5-1
+Added Pin To Net: NetName=CAN MAIN H Pin=D5-2
+Added Pin To Net: NetName=GND Pin=D5-3
+Added Pin To Net: NetName=CAN LED Pin=DS1-1
+Added Pin To Net: NetName=CAN TX LED Pin=DS1-2
+Added Pin To Net: NetName=CAN LED Pin=DS2-1
+Added Pin To Net: NetName=CAN RX LED Pin=DS2-2
+Added Pin To Net: NetName=NetDS3_1 Pin=DS3-1
+Added Pin To Net: NetName=NetDS4_1 Pin=DS4-1
+Added Pin To Net: NetName=CAN MAIN LED Pin=DS5-1
+Added Pin To Net: NetName=CAN MAIN TX LED Pin=DS5-2
+Added Pin To Net: NetName=CAN MAIN LED Pin=DS6-1
+Added Pin To Net: NetName=CAN MAIN RX LED Pin=DS6-2
+Added Pin To Net: NetName=3V3 Pin=J6-1
+Added Pin To Net: NetName=CAN LED Pin=J6-2
+Added Pin To Net: NetName=CAN H Pin=J7-1
+Added Pin To Net: NetName=NetJ7_2 Pin=J7-2
+Added Pin To Net: NetName=ISO 3V3 Pin=J8-1
+Added Pin To Net: NetName=CAN LBK Pin=J8-2
+Added Pin To Net: NetName=3V3 Pin=J9-1
+Added Pin To Net: NetName=GND Pin=J9-3
+Added Pin To Net: NetName=GND Pin=J9-5
+Added Pin To Net: NetName=GND Pin=J9-9
+Added Pin To Net: NetName=3V3 Pin=J10-1
+Added Pin To Net: NetName=CAN MAIN LED Pin=J10-2
+Added Pin To Net: NetName=CAN MAIN H Pin=J11-1
+Added Pin To Net: NetName=NetJ11_2 Pin=J11-2
+Added Pin To Net: NetName=3V3 Pin=J12-1
+Added Pin To Net: NetName=CAN MAIN LBK Pin=J12-2
+Added Pin To Net: NetName=NetR1_1 Pin=R1-1
+Added Pin To Net: NetName=5V Pin=R1-2
+Added Pin To Net: NetName=NetR2_1 Pin=R2-1
+Added Pin To Net: NetName=3V3 Pin=R2-2
+Added Pin To Net: NetName=GND Pin=R3-1
+Added Pin To Net: NetName=NetR2_1 Pin=R3-2
+Added Pin To Net: NetName=CAN TX Pin=R4-1
+Added Pin To Net: NetName=CAN TX LED Pin=R4-2
+Added Pin To Net: NetName=CAN RX Pin=R5-1
+Added Pin To Net: NetName=CAN RX LED Pin=R5-2
+Added Pin To Net: NetName=CAN L Pin=R6-1
+Added Pin To Net: NetName=NetJ7_2 Pin=R6-2
+Added Pin To Net: NetName=NetDS3_1 Pin=R7-1
+Added Pin To Net: NetName=3V3 Pin=R7-2
+Added Pin To Net: NetName=NetDS4_1 Pin=R8-1
+Added Pin To Net: NetName=3V3 Pin=R8-2
+Added Pin To Net: NetName=NRST Pin=R9-1
+Added Pin To Net: NetName=3V3 Pin=R9-2
+Added Pin To Net: NetName=NetR10_1 Pin=R10-1
+Added Pin To Net: NetName=ISO 5V A Pin=R10-2
+Added Pin To Net: NetName=ISO GND A Pin=R11-1
+Added Pin To Net: NetName=NetR10_1 Pin=R11-2
+Added Pin To Net: NetName=CAN MAIN TX Pin=R12-1
+Added Pin To Net: NetName=CAN MAIN TX LED Pin=R12-2
+Added Pin To Net: NetName=CAN MAIN RX Pin=R13-1
+Added Pin To Net: NetName=CAN MAIN RX LED Pin=R13-2
+Added Pin To Net: NetName=CAN MAIN L Pin=R14-1
+Added Pin To Net: NetName=NetJ11_2 Pin=R14-2
+Added Pin To Net: NetName=GND Pin=Rfbb1-1
+Added Pin To Net: NetName=NetR1_1 Pin=Rfbb1-2
+Added Pin To Net: NetName=GND Pin=SW1-1
+Added Pin To Net: NetName=NRST Pin=SW1-2
+Added Pin To Net: NetName=CAN H Pin=TP1-1
+Added Pin To Net: NetName=ISO CAN TX Pin=TP2-1
+Added Pin To Net: NetName=CAN TX Pin=TP3-1
+Added Pin To Net: NetName=CAN L Pin=TP4-1
+Added Pin To Net: NetName=ISO CAN RX Pin=TP5-1
+Added Pin To Net: NetName=CAN RX Pin=TP6-1
+Added Pin To Net: NetName=CAN MAIN H Pin=TP7-1
+Added Pin To Net: NetName=CAN MAIN TX Pin=TP8-1
+Added Pin To Net: NetName=CAN MAIN L Pin=TP9-1
+Added Pin To Net: NetName=CAN MAIN RX Pin=TP10-1
+Added Pin To Net: NetName=NetCboot1_2 Pin=U1-1
+Added Pin To Net: NetName=GND Pin=U1-2
+Added Pin To Net: NetName=NetR1_1 Pin=U1-3
+Added Pin To Net: NetName=12V Pin=U1-5
+Added Pin To Net: NetName=NetCboot1_1 Pin=U1-6
+Added Pin To Net: NetName=NetCboot2_2 Pin=U2-1
+Added Pin To Net: NetName=GND Pin=U2-2
+Added Pin To Net: NetName=NetR2_1 Pin=U2-3
+Added Pin To Net: NetName=12V Pin=U2-5
+Added Pin To Net: NetName=NetCboot2_1 Pin=U2-6
+Added Pin To Net: NetName=3V3 Pin=U3-1
+Added Pin To Net: NetName=CAN TX Pin=U3-2
+Added Pin To Net: NetName=CAN RX Pin=U3-3
+Added Pin To Net: NetName=GND Pin=U3-4
+Added Pin To Net: NetName=ISO GND Pin=U3-5
+Added Pin To Net: NetName=ISO CAN RX Pin=U3-6
+Added Pin To Net: NetName=ISO CAN TX Pin=U3-7
+Added Pin To Net: NetName=ISO 3V3 Pin=U3-8
+Added Pin To Net: NetName=ISO CAN TX Pin=U4-1
+Added Pin To Net: NetName=ISO GND Pin=U4-2
+Added Pin To Net: NetName=ISO 3V3 Pin=U4-3
+Added Pin To Net: NetName=ISO CAN RX Pin=U4-4
+Added Pin To Net: NetName=CAN LBK Pin=U4-5
+Added Pin To Net: NetName=CAN L Pin=U4-6
+Added Pin To Net: NetName=CAN H Pin=U4-7
+Added Pin To Net: NetName=ISO GND Pin=U4-8
+Added Pin To Net: NetName=3V3 Pin=U5-1
+Added Pin To Net: NetName=OSC IN Pin=U5-5
+Added Pin To Net: NetName=GND Pin=U5-6
+Added Pin To Net: NetName=GND Pin=U5-12
+Added Pin To Net: NetName=3V3 Pin=U5-13
+Added Pin To Net: NetName=GND Pin=U5-18
+Added Pin To Net: NetName=3V3 Pin=U5-19
+Added Pin To Net: NetName=GND Pin=U5-31
+Added Pin To Net: NetName=3V3 Pin=U5-32
+Added Pin To Net: NetName=CAN MAIN RX Pin=U5-33
+Added Pin To Net: NetName=CAN MAIN TX Pin=U5-34
+Added Pin To Net: NetName=CAN RX Pin=U5-44
+Added Pin To Net: NetName=CAN TX Pin=U5-45
+Added Pin To Net: NetName=GND Pin=U5-47
+Added Pin To Net: NetName=3V3 Pin=U5-48
+Added Pin To Net: NetName=GND Pin=U5-63
+Added Pin To Net: NetName=3V3 Pin=U5-64
+Added Pin To Net: NetName=3V3 Pin=U6-1
+Added Pin To Net: NetName=GND Pin=U6-2
+Added Pin To Net: NetName=OSC IN Pin=U6-3
+Added Pin To Net: NetName=3V3 Pin=U6-4
+Added Pin To Net: NetName=NetC13_2 Pin=U7-1
+Added Pin To Net: NetName=ISO GND A Pin=U7-2
+Added Pin To Net: NetName=NetR10_1 Pin=U7-3
+Added Pin To Net: NetName=ISO 12VA Pin=U7-5
+Added Pin To Net: NetName=NetC13_1 Pin=U7-6
+Added Pin To Net: NetName=CAN MAIN TX Pin=U8-1
+Added Pin To Net: NetName=GND Pin=U8-2
+Added Pin To Net: NetName=3V3 Pin=U8-3
+Added Pin To Net: NetName=CAN MAIN RX Pin=U8-4
+Added Pin To Net: NetName=CAN MAIN LBK Pin=U8-5
+Added Pin To Net: NetName=CAN MAIN L Pin=U8-6
+Added Pin To Net: NetName=CAN MAIN H Pin=U8-7
+Added Pin To Net: NetName=GND Pin=U8-8
+Added Pin To Net: NetName=+12 Pin=Connector_U_MX120G1-4
+Added Pin To Net: NetName=+12 Pin=Connector_U_MX120G1-5
+Added Pin To Net: NetName=+12 Pin=Connector_U_MX120G1-10
+Added Pin To Net: NetName=+12 Pin=Connector_U_MX120G1-11
+Added Pin To Net: NetName=+12 Pin=Connector_U_MX120G2-4
+Added Pin To Net: NetName=+12 Pin=Connector_U_MX120G2-5
+Added Pin To Net: NetName=+12 Pin=Connector_U_MX120G2-10
+Added Pin To Net: NetName=+12 Pin=Connector_U_MX120G2-11
+Added Pin To Net: NetName=+12 Pin=Connector_U_MX120G3-4
+Added Pin To Net: NetName=+12 Pin=Connector_U_MX120G3-5
+Added Pin To Net: NetName=+12 Pin=Connector_U_MX120G3-10
+Added Pin To Net: NetName=+12 Pin=Connector_U_MX120G3-11
+Added Pin To Net: NetName=+12 Pin=Connector_U_MX120G4-4
+Added Pin To Net: NetName=+12 Pin=Connector_U_MX120G4-5
+Added Pin To Net: NetName=+12 Pin=Connector_U_MX120G4-10
+Added Pin To Net: NetName=+12 Pin=Connector_U_MX120G4-11
+Added Pin To Net: NetName=+12 Pin=Connector_U_MX120G5-4
+Added Pin To Net: NetName=+12 Pin=Connector_U_MX120G5-5
+Added Pin To Net: NetName=+12 Pin=Connector_U_MX120G5-10
+Added Pin To Net: NetName=+12 Pin=Connector_U_MX120G5-11
+Added Net: Name=+12
+Added Pin To Net: NetName=NetConnector_U_MX120G1_1 Pin=Connector_U_MX120G1-1
+Added Net: Name=NetConnector_U_MX120G1_1
+Added Pin To Net: NetName=NetConnector_U_MX120G1_2 Pin=Connector_U_MX120G1-2
+Added Net: Name=NetConnector_U_MX120G1_2
+Added Pin To Net: NetName=NetConnector_U_MX120G1_7 Pin=Connector_U_MX120G1-7
+Added Net: Name=NetConnector_U_MX120G1_7
+Added Pin To Net: NetName=NetConnector_U_MX120G1_8 Pin=Connector_U_MX120G1-8
+Added Net: Name=NetConnector_U_MX120G1_8
+Added Pin To Net: NetName=NetConnector_U_MX120G2_1 Pin=Connector_U_MX120G2-1
+Added Net: Name=NetConnector_U_MX120G2_1
+Added Pin To Net: NetName=NetConnector_U_MX120G2_2 Pin=Connector_U_MX120G2-2
+Added Net: Name=NetConnector_U_MX120G2_2
+Added Pin To Net: NetName=NetConnector_U_MX120G2_7 Pin=Connector_U_MX120G2-7
+Added Net: Name=NetConnector_U_MX120G2_7
+Added Pin To Net: NetName=NetConnector_U_MX120G2_8 Pin=Connector_U_MX120G2-8
+Added Net: Name=NetConnector_U_MX120G2_8
+Added Pin To Net: NetName=NetConnector_U_MX120G3_1 Pin=Connector_U_MX120G3-1
+Added Net: Name=NetConnector_U_MX120G3_1
+Added Pin To Net: NetName=NetConnector_U_MX120G3_2 Pin=Connector_U_MX120G3-2
+Added Net: Name=NetConnector_U_MX120G3_2
+Added Pin To Net: NetName=NetConnector_U_MX120G3_7 Pin=Connector_U_MX120G3-7
+Added Net: Name=NetConnector_U_MX120G3_7
+Added Pin To Net: NetName=NetConnector_U_MX120G3_8 Pin=Connector_U_MX120G3-8
+Added Net: Name=NetConnector_U_MX120G3_8
+Added Pin To Net: NetName=NetConnector_U_MX120G4_1 Pin=Connector_U_MX120G4-1
+Added Net: Name=NetConnector_U_MX120G4_1
+Added Pin To Net: NetName=NetConnector_U_MX120G4_2 Pin=Connector_U_MX120G4-2
+Added Net: Name=NetConnector_U_MX120G4_2
+Added Pin To Net: NetName=NetConnector_U_MX120G4_7 Pin=Connector_U_MX120G4-7
+Added Net: Name=NetConnector_U_MX120G4_7
+Added Pin To Net: NetName=NetConnector_U_MX120G4_8 Pin=Connector_U_MX120G4-8
+Added Net: Name=NetConnector_U_MX120G4_8
+Added Pin To Net: NetName=NetConnector_U_MX120G5_1 Pin=Connector_U_MX120G5-1
+Added Net: Name=NetConnector_U_MX120G5_1
+Added Pin To Net: NetName=NetConnector_U_MX120G5_2 Pin=Connector_U_MX120G5-2
+Added Net: Name=NetConnector_U_MX120G5_2
+Added Pin To Net: NetName=NetConnector_U_MX120G5_7 Pin=Connector_U_MX120G5-7
+Added Net: Name=NetConnector_U_MX120G5_7
+Added Pin To Net: NetName=NetConnector_U_MX120G5_8 Pin=Connector_U_MX120G5-8
+Added Net: Name=NetConnector_U_MX120G5_8
+Added Class: Name=U_MX120G1
+Added Class: Name=U_MX120G2
+Added Class: Name=U_MX120G3
+Added Class: Name=U_MX120G4
+Added Class: Name=U_MX120G5
+Added Class: Name=MX120G
+Added Member To Class: ClassName=U_MCISO-S03-V00-PSU5VB Member=Component C1 10uF 25V 10% X7R 1206
+Added Member To Class: ClassName=U_MCISO-S06-V00-PSU3V3 Member=Component C2 10uF 25V 10% X7R 1206
+Added Member To Class: ClassName=U_MCISO-S05-V00-CANIsolation Member=Component C3 100nF
+Added Member To Class: ClassName=U_MCISO-S05-V00-CANIsolation Member=Component C4 100nF
+Added Member To Class: ClassName=U_MCISO-S05-V00-CANIsolation Member=Component C5 100nF
+Added Member To Class: ClassName=U_MCISO-S04-V00-Microcontroller Member=Component C6 100nF
+Added Member To Class: ClassName=U_MCISO-S04-V00-Microcontroller Member=Component C7 100nF
+Added Member To Class: ClassName=U_MCISO-S04-V00-Microcontroller Member=Component C8 100nF
+Added Member To Class: ClassName=U_MCISO-S04-V00-Microcontroller Member=Component C9 100nF
+Added Member To Class: ClassName=U_MCISO-S04-V00-Microcontroller Member=Component C10 4u7
+Added Member To Class: ClassName=U_MCISO-S04-V00-Microcontroller Member=Component C11 100nF 100V
+Added Member To Class: ClassName=U_MCISO-S04-V00-Microcontroller Member=Component C12 100nF 100V
+Added Member To Class: ClassName=U_MCISO-S02-V00-PSU5VA Member=Component C13 100nF 50V 5% X7R 0603
+Added Member To Class: ClassName=U_MCISO-S02-V00-PSU5VA Member=Component C14 10uF 25V 10% X7R 1206
+Added Member To Class: ClassName=U_MCISO-S07-V00-CANMain Member=Component C15 100nF 100V
+Added Member To Class: ClassName=U_MCISO-S03-V00-PSU5VB Member=Component Cboot1 100nF 50V 5% X7R 0603
+Added Member To Class: ClassName=U_MCISO-S06-V00-PSU3V3 Member=Component Cboot2 100nF 50V 5% X7R 0603
+Added Member To Class: ClassName=U_MCISO-S03-V00-PSU5VB Member=Component Cin1 10uF 25V 10% X7R 1206
+Added Member To Class: ClassName=U_MCISO-S06-V00-PSU3V3 Member=Component Cin2 10uF 25V 10% X7R 1206
+Added Member To Class: ClassName=U_MCISO-S02-V00-PSU5VA Member=Component Cin3 10uF 25V 10% X7R 1206
+Added Member To Class: ClassName=U_MCISO-S03-V00-PSU5VB Member=Component D1 B260A-13-F
+Added Member To Class: ClassName=U_MCISO-S06-V00-PSU3V3 Member=Component D2 B260A-13-F
+Added Member To Class: ClassName=U_MCISO-S05-V00-CANIsolation Member=Component D3 NUP2105L
+Added Member To Class: ClassName=U_MCISO-S02-V00-PSU5VA Member=Component D4 B260A-13-F
+Added Member To Class: ClassName=U_MCISO-S07-V00-CANMain Member=Component D5 NUP2105L
+Added Member To Class: ClassName=U_MCISO-S05-V00-CANIsolation Member=Component DS1 LED Blue 0603
+Added Member To Class: ClassName=U_MCISO-S05-V00-CANIsolation Member=Component DS2 LED Blue 0603
+Added Member To Class: ClassName=U_MCISO-S04-V00-Microcontroller Member=Component DS3 LED Orange
+Added Member To Class: ClassName=U_MCISO-S04-V00-Microcontroller Member=Component DS4 LED Orange
+Added Member To Class: ClassName=U_MCISO-S07-V00-CANMain Member=Component DS5 LED Blue 0603
+Added Member To Class: ClassName=U_MCISO-S07-V00-CANMain Member=Component DS6 LED Blue 0603
+Added Member To Class: ClassName=MCISO-S01-V00-Master Member=Component J2 JST PH 4x RIGHT COMB
+Added Member To Class: ClassName=U_MCISO-S05-V00-CANIsolation Member=Component J6 Jumper 2Way Pins
+Added Member To Class: ClassName=U_MCISO-S05-V00-CANIsolation Member=Component J7 Jumper 2Way Pins
+Added Member To Class: ClassName=U_MCISO-S05-V00-CANIsolation Member=Component J8 Jumper 2Way Pins
+Added Member To Class: ClassName=U_MCISO-S04-V00-Microcontroller Member=Component J9 IDC 10P 2x5 1.27mm
+Added Member To Class: ClassName=U_MCISO-S07-V00-CANMain Member=Component J10 Jumper 2Way Pins
+Added Member To Class: ClassName=U_MCISO-S07-V00-CANMain Member=Component J11 Jumper 2Way Pins
+Added Member To Class: ClassName=U_MCISO-S07-V00-CANMain Member=Component J12 Jumper 2Way Pins
+Added Member To Class: ClassName=U_MCISO-S03-V00-PSU5VB Member=Component R1 111k 1% 0603
+Added Member To Class: ClassName=U_MCISO-S06-V00-PSU3V3 Member=Component R2 64k9 1% 0603
+Added Member To Class: ClassName=U_MCISO-S06-V00-PSU3V3 Member=Component R3 19k6 1% 0603
+Added Member To Class: ClassName=U_MCISO-S05-V00-CANIsolation Member=Component R4 330R
+Added Member To Class: ClassName=U_MCISO-S05-V00-CANIsolation Member=Component R5 330R
+Added Member To Class: ClassName=U_MCISO-S05-V00-CANIsolation Member=Component R6 120R 1% 1210
+Added Member To Class: ClassName=U_MCISO-S04-V00-Microcontroller Member=Component R7 330R
+Added Member To Class: ClassName=U_MCISO-S04-V00-Microcontroller Member=Component R8 330R
+Added Member To Class: ClassName=U_MCISO-S04-V00-Microcontroller Member=Component R9 4k7
+Added Member To Class: ClassName=U_MCISO-S02-V00-PSU5VA Member=Component R10 111k 1% 0603
+Added Member To Class: ClassName=U_MCISO-S02-V00-PSU5VA Member=Component R11 20k 1% 0603
+Added Member To Class: ClassName=U_MCISO-S07-V00-CANMain Member=Component R12 330R
+Added Member To Class: ClassName=U_MCISO-S07-V00-CANMain Member=Component R13 330R
+Added Member To Class: ClassName=U_MCISO-S07-V00-CANMain Member=Component R14 120R 1% 1210
+Added Member To Class: ClassName=U_MCISO-S03-V00-PSU5VB Member=Component Rfbb1 20k 1% 0603
+Added Member To Class: ClassName=U_MCISO-S04-V00-Microcontroller Member=Component SW1 B3U-1000P
+Added Member To Class: ClassName=U_MCISO-S05-V00-CANIsolation Member=Component TP1 TestPoint_SMD
+Added Member To Class: ClassName=U_MCISO-S05-V00-CANIsolation Member=Component TP2 TestPoint_SMD
+Added Member To Class: ClassName=U_MCISO-S05-V00-CANIsolation Member=Component TP3 TestPoint_SMD
+Added Member To Class: ClassName=U_MCISO-S05-V00-CANIsolation Member=Component TP4 TestPoint_SMD
+Added Member To Class: ClassName=U_MCISO-S05-V00-CANIsolation Member=Component TP5 TestPoint_SMD
+Added Member To Class: ClassName=U_MCISO-S05-V00-CANIsolation Member=Component TP6 TestPoint_SMD
+Added Member To Class: ClassName=U_MCISO-S07-V00-CANMain Member=Component TP7 TestPoint_SMD
+Added Member To Class: ClassName=U_MCISO-S07-V00-CANMain Member=Component TP8 TestPoint_SMD
+Added Member To Class: ClassName=U_MCISO-S07-V00-CANMain Member=Component TP9 TestPoint_SMD
+Added Member To Class: ClassName=U_MCISO-S07-V00-CANMain Member=Component TP10 TestPoint_SMD
+Added Member To Class: ClassName=U_MCISO-S03-V00-PSU5VB Member=Component U1 LMR14010
+Added Member To Class: ClassName=U_MCISO-S06-V00-PSU3V3 Member=Component U2 LMR14010
+Added Member To Class: ClassName=U_MCISO-S05-V00-CANIsolation Member=Component U3 Si8621BC-B-IS
+Added Member To Class: ClassName=U_MCISO-S05-V00-CANIsolation Member=Component U4 SN65HVD233
+Added Member To Class: ClassName=U_MCISO-S04-V00-Microcontroller Member=Component U5 STM32F105RC
+Added Member To Class: ClassName=U_MCISO-S04-V00-Microcontroller Member=Component U6 DSC1001DI1-008.0000T
+Added Member To Class: ClassName=U_MCISO-S02-V00-PSU5VA Member=Component U7 LMR14010
+Added Member To Class: ClassName=U_MCISO-S07-V00-CANMain Member=Component U8 SN65HVD233
+Added Room: Name=MCISO-S01-V00-Master
+Added Room: Name=U_MCISO-S02-V00-PSU5VA
+Added Room: Name=U_MCISO-S03-V00-PSU5VB
+Added Room: Name=U_MCISO-S04-V00-Microcontroller
+Added Room: Name=U_MCISO-S05-V00-CANIsolation
+Added Room: Name=U_MCISO-S06-V00-PSU3V3
+Added Room: Name=U_MCISO-S07-V00-CANMain
+Added Room: Name=U_MCISO-S08-V00-HallDifferentials
+Added Room: Name=U_MX120G1
+Added Room: Name=U_MX120G2
+Added Room: Name=U_MX120G3
+Added Room: Name=U_MX120G4
+Added Room: Name=U_MX120G5

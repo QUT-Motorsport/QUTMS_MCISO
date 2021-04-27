@@ -1,0 +1,14 @@
+Remove Pin=DS?-2 From Net=LED0
+Remove Pin=DS?-2 From Net=LED1
+Remove Pin=J?-2 From Net=SWDIO
+Remove Pin=J?-4 From Net=SWCLK
+Remove Pin=J?-10 From Net=NRST
+Remove Pin=U?-7 From Net=NRST
+Remove Pin=U?-33 From Net=CAN MAIN RX
+Remove Pin=U?-34 From Net=CAN MAIN TX
+Remove Pin=U?-44 From Net=CAN INV RX
+Remove Pin=U?-45 From Net=CAN INV TX
+Remove Pin=U?-46 From Net=SWDIO
+Remove Pin=U?-49 From Net=SWCLK
+Remove Pin=U?-61 From Net=LED0
+Remove Pin=U?-62 From Net=LED1
