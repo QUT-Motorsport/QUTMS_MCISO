@@ -1,0 +1,6 @@
+Timer.c:10:12:timer_init	40	static
+Timer.c:24:6:timer_update	16	static
+Timer.c:47:6:timer_start	16	static
+Timer.c:53:6:timer_isRunning	16	static
+Timer.c:58:6:timer_reset	16	static
+Timer.c:64:6:timer_stop	16	static

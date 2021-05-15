@@ -1,0 +1,3 @@
+window_filtering.c:11:6:window_filter_initialize	32	static
+window_filtering.c:25:6:window_filter_update	24	static
+window_filtering.c:46:6:window_filter_delete	16	static
