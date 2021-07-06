@@ -29,6 +29,7 @@
 #include <sys/unistd.h>
 #include <string.h>
 #include <stdlib.h>
+#include "VESC_CAN_Messages.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -109,25 +110,38 @@ int main(void)
 		Error_Handler();
 	}
 
-	CAN_FilterTypeDef sFilterConfig;
+	CAN_FilterTypeDef GLVFilterConfig;
 
-	sFilterConfig.FilterBank = 0;
-	sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
-	sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
-	sFilterConfig.FilterIdHigh = 0x0000;
-	sFilterConfig.FilterIdLow = 0x0001;
-	sFilterConfig.FilterMaskIdHigh = 0x0000;
-	sFilterConfig.FilterMaskIdLow = 0x0000;
-	sFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0;
-	sFilterConfig.FilterActivation = ENABLE;
-	sFilterConfig.SlaveStartFilterBank = 14;
+	GLVFilterConfig.FilterBank = 0;
+	GLVFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
+	GLVFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
+	GLVFilterConfig.FilterIdHigh = 0x0000;
+	GLVFilterConfig.FilterIdLow = 0x0000;
+	GLVFilterConfig.FilterMaskIdHigh = 0x0000;
+	GLVFilterConfig.FilterMaskIdLow = 0x0000;
+	GLVFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0;
+	GLVFilterConfig.FilterActivation = ENABLE;
+	GLVFilterConfig.SlaveStartFilterBank = 14;
 
-	if(HAL_CAN_ConfigFilter(&hcan1, &sFilterConfig) != HAL_OK)
+	if(HAL_CAN_ConfigFilter(&hcan1, &GLVFilterConfig) != HAL_OK)
 	{
 		Error_Handler();
 	}
 
-	if(HAL_CAN_ConfigFilter(&hcan2, &sFilterConfig) != HAL_OK)
+	CAN_FilterTypeDef HVFilterConfig;
+
+	HVFilterConfig.FilterBank = 14;
+	HVFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
+	HVFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
+	HVFilterConfig.FilterIdHigh = 0x0000;
+	HVFilterConfig.FilterIdLow = 0x0000;
+	HVFilterConfig.FilterMaskIdHigh = 0x0000;
+	HVFilterConfig.FilterMaskIdLow = 0x0000;
+	HVFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0;
+	HVFilterConfig.FilterActivation = ENABLE;
+	HVFilterConfig.SlaveStartFilterBank = 14;
+
+	if(HAL_CAN_ConfigFilter(&hcan2, &HVFilterConfig) != HAL_OK)
 	{
 		Error_Handler();
 	}
@@ -185,23 +199,32 @@ int main(void)
 			HAL_CAN_AddTxMessage(&hcan2, &header, msg.data, &can2Mb);
 		}
 
+//		VESC_Ping_t ping = Compose_VESC_Ping(2);
+//
 //		CAN_TxHeaderTypeDef header =
 //		{
-//				.ExtId = (0x00000000 | CAN_PACKET_SET_CURRENT << 8 | 1),
+//				.ExtId = ping.id,
 //				.IDE = CAN_ID_EXT,
 //				.RTR = CAN_RTR_DATA,
-//				.DLC = 4,
+//				.DLC = 0,
 //				.TransmitGlobalTime = DISABLE
 //		};
-//		while(HAL_CAN_GetTxMailboxesFreeLevel(&hcan2) == 0) {
-//					printf("Found a free mailbox, time to lick a stamp and send it\r\n");
-//				}
-//		header.ExtId = (0x00000000 | CAN_PACKET_SET_CURRENT << 8 | 2);
-//		if(HAL_CAN_AddTxMessage(&hcan2, &header, (uint8_t *)&dA, &can2Mb) != HAL_OK)
+//		while(HAL_CAN_GetTxMailboxesFreeLevel(&hcan2) == 0);
+//		HAL_CAN_AddTxMessage(&hcan2, &header, NULL, &can2Mb);
+//
+//		VESC_SetDuty_t duty = Compose_VESC_SetDuty(2, 0.69);
+//		CAN_TxHeaderTypeDef header2 =
 //		{
-//			printf("Houston, HAL is not OK!\r\n");
-//			Error_Handler();
-//		}
+//				.ExtId = duty.id,
+//				.IDE = CAN_ID_EXT,
+//				.RTR = CAN_RTR_DATA,
+//				.DLC = sizeof(duty.data),
+//				.TransmitGlobalTime = DISABLE
+//		};
+//		while(HAL_CAN_GetTxMailboxesFreeLevel(&hcan2) == 0);
+//		HAL_CAN_AddTxMessage(&hcan2, &header2, duty.data, &can2Mb);
+//		HAL_Delay(20);
+
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */
