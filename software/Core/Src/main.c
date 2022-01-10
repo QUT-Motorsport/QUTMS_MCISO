@@ -29,7 +29,9 @@
 #include <sys/unistd.h>
 #include <string.h>
 #include <stdlib.h>
-#include "VESC_CAN_Messages.h"
+#include "CAN_VESC.h"
+#include "CAN_MCISO.h"
+#include <Timer.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -51,6 +53,16 @@
 /* USER CODE BEGIN PV */
 // hcan1 == GLV
 // hcan2 == HV
+
+#define MCISO_ID 0
+
+enum VESC_ID {
+	FL = 0,
+	FR = 1,
+	RL = 2,
+	RR = 3
+};
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -61,7 +73,9 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+ms_timer_t timer_heartbeat;
+void setup_heartbeat();
+void heartbeat_timer_cb(void *args);
 /* USER CODE END 0 */
 
 /**
@@ -178,6 +192,9 @@ int main(void)
 			while(HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) <= 0);
 			CAN_Generic_t msg;
 			queue_next(&c1Passthrough, &msg);
+
+
+
 			CAN_TxHeaderTypeDef header = {
 					.DLC = msg.header.DLC,
 					.ExtId = msg.header.ExtId,

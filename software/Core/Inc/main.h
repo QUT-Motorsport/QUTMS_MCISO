@@ -33,7 +33,7 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <queue.h>
-#include <QUTMS_can.h>
+#include <QUTMS_CAN.h>
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
