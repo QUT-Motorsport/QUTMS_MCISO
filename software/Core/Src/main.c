@@ -29,8 +29,8 @@
 #include <sys/unistd.h>
 #include <string.h>
 #include <stdlib.h>
-#include "CAN_VESC.h"
-#include "CAN_MCISO.h"
+#include <CAN_VESC.h>
+#include <CAN_MCISO.h>
 #include <Timer.h>
 /* USER CODE END Includes */
 
@@ -192,19 +192,10 @@ int main(void) {
 	/* USER CODE BEGIN WHILE */
 	while (1) {
 		while (!queue_empty(&c1Passthrough)) {
-			while (HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) <= 0);
+			while (HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) <= 0)
+				;
 			CAN_Generic_t msg;
 			queue_next(&c1Passthrough, &msg);
-
-			CAN_TxHeaderTypeDef header = { .DLC = msg.header.DLC, .ExtId =
-					msg.header.ExtId, .IDE = msg.header.IDE, };
-			HAL_CAN_AddTxMessage(&hcan1, &header, msg.data, &can1Mb);
-		}
-
-		while (!queue_empty(&c2Passthrough)) {
-			while (HAL_CAN_GetTxMailboxesFreeLevel(&hcan2) <= 0);
-			CAN_Generic_t msg;
-			queue_next(&c2Passthrough, &msg);
 
 			uint8_t vesc_ID = (msg.header.ExtId & 0xFF);
 			uint8_t vesc_type_ID = msg.header.ExtId >> 8;
@@ -221,6 +212,17 @@ int main(void) {
 					MCISO_heartbeatState.errorFlags.HB_INV1 = 0;
 				}
 			}
+
+			CAN_TxHeaderTypeDef header = { .DLC = msg.header.DLC, .ExtId =
+					msg.header.ExtId, .IDE = msg.header.IDE, };
+			HAL_CAN_AddTxMessage(&hcan1, &header, msg.data, &can1Mb);
+		}
+
+		while (!queue_empty(&c2Passthrough)) {
+			while (HAL_CAN_GetTxMailboxesFreeLevel(&hcan2) <= 0)
+				;
+			CAN_Generic_t msg;
+			queue_next(&c2Passthrough, &msg);
 
 			CAN_TxHeaderTypeDef header = { .DLC = msg.header.DLC, .ExtId =
 					msg.header.ExtId, .IDE = msg.header.IDE, };
