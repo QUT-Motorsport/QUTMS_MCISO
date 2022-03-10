@@ -296,6 +296,9 @@ void handleCAN(CAN_HandleTypeDef *hcan, int fifo) {
 	// Iterate over the CAN FIFO buffer, adding all CAN messages to the CAN Queue.
 	CAN_Generic_t msg;
 
+	uint8_t vesc_ID;
+	uint8_t vesc_type_ID;
+
 	while (HAL_CAN_GetRxFifoFillLevel(hcan, fifo) > 0) {
 		if (HAL_CAN_GetRxMessage(hcan, fifo, &(msg.header), msg.data)
 				!= HAL_OK) {
@@ -303,7 +306,13 @@ void handleCAN(CAN_HandleTypeDef *hcan, int fifo) {
 		}
 
 		if (hcan == &hcan1) {
-			queue_add(&c2Passthrough, &msg);
+			vesc_ID = (msg.header.ExtId & 0xFF);
+			vesc_type_ID = msg.header.ExtId >> 8;
+
+			// check that this is actually a VESC message
+			if (vesc_type_ID <= VESC_CAN_PACKET_BMS_SOC_SOH_TEMP_STAT && vesc_ID <= 4) {
+				queue_add(&c2Passthrough, &msg);
+			}
 		} else if (hcan == &hcan2) {
 			queue_add(&c1Passthrough, &msg);
 		}
