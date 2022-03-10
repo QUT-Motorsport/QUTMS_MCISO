@@ -55,7 +55,7 @@
 // hcan2 == HV
 // 0 - left, eg FL (0) and RL (2)
 // 1 - right, eg FR (1) and RR (3)
-#define MCISO_ID 1
+#define MCISO_ID 0
 
 MCISO_HeartbeatState_t MCISO_heartbeatState;
 
@@ -190,11 +190,14 @@ int main(void) {
 
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
+
+	CAN_Generic_t msg;
+	CAN_TxHeaderTypeDef header;
+
 	while (1) {
 		while (!queue_empty(&c1Passthrough)) {
 			while (HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) <= 0)
 				;
-			CAN_Generic_t msg;
 			queue_next(&c1Passthrough, &msg);
 
 			uint8_t vesc_ID = (msg.header.ExtId & 0xFF);
@@ -213,19 +216,20 @@ int main(void) {
 				}
 			}
 
-			CAN_TxHeaderTypeDef header = { .DLC = msg.header.DLC, .ExtId =
-					msg.header.ExtId, .IDE = msg.header.IDE, };
+			header.DLC = msg.header.DLC;
+			header.ExtId = msg.header.ExtId;
+			header.IDE = msg.header.IDE;
 			HAL_CAN_AddTxMessage(&hcan1, &header, msg.data, &can1Mb);
 		}
 
 		while (!queue_empty(&c2Passthrough)) {
 			while (HAL_CAN_GetTxMailboxesFreeLevel(&hcan2) <= 0)
 				;
-			CAN_Generic_t msg;
 			queue_next(&c2Passthrough, &msg);
 
-			CAN_TxHeaderTypeDef header = { .DLC = msg.header.DLC, .ExtId =
-					msg.header.ExtId, .IDE = msg.header.IDE, };
+			header.DLC = msg.header.DLC;
+			header.ExtId = msg.header.ExtId;
+			header.IDE = msg.header.IDE;
 			HAL_CAN_AddTxMessage(&hcan2, &header, msg.data, &can2Mb);
 		}
 
@@ -295,7 +299,7 @@ void handleCAN(CAN_HandleTypeDef *hcan, int fifo) {
 	while (HAL_CAN_GetRxFifoFillLevel(hcan, fifo) > 0) {
 		if (HAL_CAN_GetRxMessage(hcan, fifo, &(msg.header), msg.data)
 				!= HAL_OK) {
-			printf("Failed to recieve good can message\r\n");
+			//printf("Failed to recieve good can message\r\n");
 		}
 
 		if (hcan == &hcan1) {
