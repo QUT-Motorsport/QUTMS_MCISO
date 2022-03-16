@@ -55,7 +55,7 @@
 // hcan2 == HV
 // 0 - left, eg FL (0) and RL (2)
 // 1 - right, eg FR (1) and RR (3)
-#define MCISO_ID 0
+#define MCISO_ID 1
 
 MCISO_HeartbeatState_t MCISO_heartbeatState;
 
@@ -194,11 +194,23 @@ int main(void) {
 	CAN_Generic_t msg;
 	CAN_TxHeaderTypeDef header;
 
+	bool first_inv_msg = false;
+
 	while (1) {
-		while (!queue_empty(&c1Passthrough)) {
-			while (HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) <= 0)
-				;
-			queue_next(&c1Passthrough, &msg);
+		check_bad_heartbeat();
+
+		timer_update(&timer_heartbeat, NULL);
+
+		while (queue_next(&c1Passthrough, &msg)) {
+
+			first_inv_msg = true;
+
+			int free_lvl = HAL_CAN_GetTxMailboxesFreeLevel(&hcan1);
+
+						while (free_lvl <= 0) {
+							free_lvl = HAL_CAN_GetTxMailboxesFreeLevel(&hcan1);
+						}
+
 
 			uint8_t vesc_ID = (msg.header.ExtId & 0xFF);
 			uint8_t vesc_type_ID = msg.header.ExtId >> 8;
@@ -219,23 +231,34 @@ int main(void) {
 			header.DLC = msg.header.DLC;
 			header.ExtId = msg.header.ExtId;
 			header.IDE = msg.header.IDE;
+			header.RTR = msg.header.RTR;
+			header.TransmitGlobalTime = DISABLE;
 			HAL_CAN_AddTxMessage(&hcan1, &header, msg.data, &can1Mb);
 		}
 
-		while (!queue_empty(&c2Passthrough)) {
-			while (HAL_CAN_GetTxMailboxesFreeLevel(&hcan2) <= 0)
-				;
-			queue_next(&c2Passthrough, &msg);
+		while (queue_next(&c2Passthrough, &msg)) {
+			if (!first_inv_msg) {
+				continue;
+			}
+
+			int free_lvl = HAL_CAN_GetTxMailboxesFreeLevel(&hcan2);
+
+			while (free_lvl <= 0) {
+				free_lvl = HAL_CAN_GetTxMailboxesFreeLevel(&hcan2);
+			}
+
 
 			header.DLC = msg.header.DLC;
 			header.ExtId = msg.header.ExtId;
 			header.IDE = msg.header.IDE;
+			header.RTR = msg.header.RTR;
+			header.TransmitGlobalTime = DISABLE;
 			HAL_CAN_AddTxMessage(&hcan2, &header, msg.data, &can2Mb);
 		}
 
-		check_bad_heartbeat();
 
-		timer_update(&timer_heartbeat, NULL);
+
+		//HAL_IWDG_Refresh(&hiwdg);
 
 		/* USER CODE END WHILE */
 
@@ -306,13 +329,13 @@ void handleCAN(CAN_HandleTypeDef *hcan, int fifo) {
 		}
 
 		if (hcan == &hcan1) {
-			vesc_ID = (msg.header.ExtId & 0xFF);
-			vesc_type_ID = msg.header.ExtId >> 8;
+			//vesc_ID = (msg.header.ExtId & 0xFF);
+			//vesc_type_ID = msg.header.ExtId >> 8;
 
 			// check that this is actually a VESC message
-			if (vesc_type_ID <= VESC_CAN_PACKET_BMS_SOC_SOH_TEMP_STAT && vesc_ID <= 4) {
-				queue_add(&c2Passthrough, &msg);
-			}
+			//if (vesc_type_ID <= VESC_CAN_PACKET_BMS_SOC_SOH_TEMP_STAT && vesc_ID <= 4) {
+			queue_add(&c2Passthrough, &msg);
+			//}
 		} else if (hcan == &hcan2) {
 			queue_add(&c1Passthrough, &msg);
 		}
@@ -339,7 +362,7 @@ bool check_bad_heartbeat() {
 }
 
 void setup_heartbeat() {
-	timer_heartbeat = timer_init(100, true, heartbeat_timer_cb);
+	timer_heartbeat = timer_init(50, true, heartbeat_timer_cb);
 
 	inverters.hb_inv_start[0] = 0;
 	inverters.hb_inv_start[1] = 0;
@@ -390,4 +413,3 @@ void assert_failed(uint8_t *file, uint32_t line)
 }
 #endif /* USE_FULL_ASSERT */
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

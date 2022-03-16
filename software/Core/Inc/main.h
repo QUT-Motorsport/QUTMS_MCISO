@@ -136,5 +136,3 @@ void handleCAN(CAN_HandleTypeDef *hcan, int fifo);
 #endif
 
 #endif /* __MAIN_H */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

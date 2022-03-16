@@ -69,5 +69,3 @@ void CAN2_RX1_IRQHandler(void);
 #endif
 
 #endif /* __STM32F2xx_IT_H */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
