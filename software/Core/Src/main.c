@@ -32,6 +32,7 @@
 #include <CAN_VESC.h>
 #include <CAN_MCISO.h>
 #include <Timer.h>
+#include <CAN_AMS.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -80,6 +81,7 @@ void SystemClock_Config(void);
 /* USER CODE BEGIN 0 */
 ms_timer_t timer_heartbeat;
 inverter_state_t inverters;
+AMS_HeartbeatState_t AMS_hbState;
 
 void setup_heartbeat();
 void heartbeat_timer_cb(void *args);
@@ -202,15 +204,11 @@ int main(void) {
 		timer_update(&timer_heartbeat, NULL);
 
 		while (queue_next(&c1Passthrough, &msg)) {
-
-			first_inv_msg = true;
-
 			int free_lvl = HAL_CAN_GetTxMailboxesFreeLevel(&hcan1);
 
-						while (free_lvl <= 0) {
-							free_lvl = HAL_CAN_GetTxMailboxesFreeLevel(&hcan1);
-						}
-
+			while (free_lvl <= 0) {
+				free_lvl = HAL_CAN_GetTxMailboxesFreeLevel(&hcan1);
+			}
 
 			uint8_t vesc_ID = (msg.header.ExtId & 0xFF);
 			uint8_t vesc_type_ID = msg.header.ExtId >> 8;
@@ -237,7 +235,14 @@ int main(void) {
 		}
 
 		while (queue_next(&c2Passthrough, &msg)) {
-			if (!first_inv_msg) {
+			if (msg.header.ExtId == AMS_Heartbeat_ID) {
+				Parse_AMS_Heartbeat(msg.data, &AMS_hbState);
+			}
+
+			// if we aren't in precharge / TS active (eg TS is not powered), don't forward anything
+			// bc no inverters
+			if (!((AMS_hbState.stateID == AMS_STATE_PRECHARGE)
+					|| (AMS_hbState.stateID == AMS_STATE_TS_ACTIVE))) {
 				continue;
 			}
 
@@ -247,7 +252,6 @@ int main(void) {
 				free_lvl = HAL_CAN_GetTxMailboxesFreeLevel(&hcan2);
 			}
 
-
 			header.DLC = msg.header.DLC;
 			header.ExtId = msg.header.ExtId;
 			header.IDE = msg.header.IDE;
@@ -255,8 +259,6 @@ int main(void) {
 			header.TransmitGlobalTime = DISABLE;
 			HAL_CAN_AddTxMessage(&hcan2, &header, msg.data, &can2Mb);
 		}
-
-
 
 		//HAL_IWDG_Refresh(&hiwdg);
 
