@@ -93,11 +93,11 @@ typedef struct CAN_Generic {
 	void *hcan;
 } CAN_Generic_t;
 
-message_queue_t c1Passthrough;
-message_queue_t c2Passthrough;
+extern message_queue_t c1Passthrough;
+extern message_queue_t c2Passthrough;
 
-uint32_t can1Mb;
-uint32_t can2Mb;
+extern uint32_t can1Mb;
+extern uint32_t can2Mb;
 
 /* USER CODE END ET */
 

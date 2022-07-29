@@ -51,6 +51,12 @@
 
 /* Private variables ---------------------------------------------------------*/
 
+message_queue_t c1Passthrough;
+message_queue_t c2Passthrough;
+
+uint32_t can1Mb;
+uint32_t can2Mb;
+
 /* USER CODE BEGIN PV */
 // hcan1 == GLV
 // hcan2 == HV
