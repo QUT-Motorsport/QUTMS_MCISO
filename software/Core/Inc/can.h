@@ -26,6 +26,8 @@ extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
+#include "main.h"
+
 /* USER CODE BEGIN Includes */
 #include "main.h"
 #include "queue.h"
@@ -33,10 +35,12 @@ extern "C" {
 /* USER CODE END Includes */
 
 extern CAN_HandleTypeDef hcan1;
+
 extern CAN_HandleTypeDef hcan2;
 
 /* USER CODE BEGIN Private defines */
 // can error handling enum
+/*
 enum
 {
 	CAN_OK = 0,
@@ -45,7 +49,7 @@ enum
 	CAN_HANDLE_ERROR,
 	CAN_TX_ERROR,
 	CAN_RX_ERROR
-}CAN_ERROR_e;
+}CAN_ERROR_e;*/
 
 typedef struct CAN_Generic {
 	CAN_RxHeaderTypeDef header;
@@ -102,13 +106,11 @@ typedef enum {
     CAN_PACKET_BMS_SOC_SOH_TEMP_STAT
 } CAN_PACKET_ID;
 
-uint32_t can1Mb;
-uint32_t can2Mb;
+extern uint32_t can1Mb;
+extern uint32_t can2Mb;
 
-message_queue_t CAN1_Rx;
-message_queue_t CAN1_Tx;
-message_queue_t CAN2_Rx;
-message_queue_t CAN2_Tx;
+extern message_queue_t CAN1_Passthrough;
+extern message_queue_t CAN2_Passthrough;
 /* USER CODE END Private defines */
 
 void MX_CAN1_Init(void);

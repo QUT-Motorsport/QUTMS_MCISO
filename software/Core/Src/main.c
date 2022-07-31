@@ -59,6 +59,12 @@
 #define MCISO_ID 1
 
 MCISO_HeartbeatState_t MCISO_heartbeatState;
+uint32_t can1Mb;
+uint32_t can2Mb;
+
+message_queue_t CAN1_Passthrough, CAN2_Passthrough;
+message_queue_t CAN1_Tx_Queue, CAN2_Tx_Queue;
+
 
 #define INVERTER_COUNT 2
 #define HEARTBEAT_TIMEOUT 300U
@@ -86,6 +92,7 @@ AMS_HeartbeatState_t AMS_hbState;
 void setup_heartbeat();
 void heartbeat_timer_cb(void *args);
 bool check_bad_heartbeat();
+
 /* USER CODE END 0 */
 
 /**
@@ -121,7 +128,7 @@ int main(void)
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  	CAN_setup();
+ 	CAN_setup();
   	setup_heartbeat();
 
 //	uint32_t data = 0;
@@ -132,23 +139,19 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-	//CAN_Generic_t msg;
-	//CAN_TxHeaderTypeDef header;
+	CAN_Generic_t msg;
+	CAN_TxHeaderTypeDef header;
 
 	//bool first_inv_msg = false;
 
+
 	while (1) {
-		/*
 		check_bad_heartbeat();
 
 		timer_update(&timer_heartbeat, NULL);
 
-		while (queue_next(&CAN1_Rx, &msg)) {
-			int free_lvl = HAL_CAN_GetTxMailboxesFreeLevel(&hcan1);
-
-			while (free_lvl <= 0) {
-				free_lvl = HAL_CAN_GetTxMailboxesFreeLevel(&hcan1);
-			}
+		while (queue_next(&CAN1_Passthrough, &msg)) {
+			//int free_lvl = HAL_CAN_GetTxMailboxesFreeLevel(&hcan1);
 
 			uint8_t vesc_ID = (msg.header.ExtId & 0xFF);
 			uint8_t vesc_type_ID = msg.header.ExtId >> 8;
@@ -166,15 +169,22 @@ int main(void)
 				}
 			}
 
-			header.DLC = msg.header.DLC;
-			header.ExtId = msg.header.ExtId;
-			header.IDE = msg.header.IDE;
-			header.RTR = msg.header.RTR;
-			header.TransmitGlobalTime = DISABLE;
-			HAL_CAN_AddTxMessage(&hcan1, &header, msg.data, &can1Mb);
+			if( HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) > 0)
+			{
+				header.DLC = msg.header.DLC;
+				header.ExtId = msg.header.ExtId;
+				header.IDE = msg.header.IDE;
+				header.RTR = msg.header.RTR;
+				header.TransmitGlobalTime = DISABLE;
+				HAL_CAN_AddTxMessage(&hcan1, &header, msg.data, &can1Mb);
+			}
+			else
+			{
+				queue_add(&CAN1_Tx_Queue, &msg);
+			}
 		}
 
-		while (queue_next(&CAN2_Rx, &msg)) {
+		while (queue_next(&CAN2_Passthrough, &msg)) {
 			if (msg.header.ExtId == AMS_Heartbeat_ID) {
 				Parse_AMS_Heartbeat(msg.data, &AMS_hbState);
 			}
@@ -185,22 +195,24 @@ int main(void)
 					|| (AMS_hbState.stateID == AMS_STATE_TS_ACTIVE))) {
 				continue;
 			}
-
-			int free_lvl = HAL_CAN_GetTxMailboxesFreeLevel(&hcan2);
-
-			while (free_lvl <= 0) {
-				free_lvl = HAL_CAN_GetTxMailboxesFreeLevel(&hcan2);
+			if( HAL_CAN_GetTxMailboxesFreeLevel(&hcan2) > 0)
+			{
+				header.DLC = msg.header.DLC;
+				header.ExtId = msg.header.ExtId;
+				header.IDE = msg.header.IDE;
+				header.RTR = msg.header.RTR;
+				header.TransmitGlobalTime = DISABLE;
+				HAL_CAN_AddTxMessage(&hcan2, &header, msg.data, &can2Mb);
 			}
-
-			header.DLC = msg.header.DLC;
-			header.ExtId = msg.header.ExtId;
-			header.IDE = msg.header.IDE;
-			header.RTR = msg.header.RTR;
-			header.TransmitGlobalTime = DISABLE;
-			HAL_CAN_AddTxMessage(&hcan2, &header, msg.data, &can2Mb);
+			else
+			{
+				queue_add(&CAN2_Tx_Queue, &msg);
+			}
 		}
 
-		//HAL_IWDG_Refresh(&hiwdg);*/
+
+
+		//HAL_IWDG_Refresh(&hiwdg);
 
     /* USER CODE END WHILE */
 
@@ -286,6 +298,7 @@ void setup_heartbeat() {
 	timer_start(&timer_heartbeat);
 }
 
+
 void heartbeat_timer_cb(void *args) {
 	MCISO_Heartbeat_t msg = Compose_MCISO_Heartbeat(MCISO_ID,
 			&MCISO_heartbeatState);
@@ -294,7 +307,15 @@ void heartbeat_timer_cb(void *args) {
 			.TransmitGlobalTime = DISABLE };
 
 	// send heartbeat on all main CANbus
-	HAL_CAN_AddTxMessage(&hcan1, &header, msg.data, &can1Mb);
+	if(HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) > 0)
+	{
+		HAL_CAN_AddTxMessage(&hcan1, &header, msg.data, &can1Mb);
+	}
+	else
+	{
+		queue_add(&CAN1_Tx_Queue, &msg);
+	}
+
 }
 
 /* USER CODE END 4 */

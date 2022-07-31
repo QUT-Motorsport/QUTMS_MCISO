@@ -21,11 +21,12 @@
 #include "can.h"
 
 /* USER CODE BEGIN 0 */
-message_queue_t CAN1_Tx_Queue, CAN2_Tx_Queue;
+extern message_queue_t CAN1_Tx_Queue, CAN2_Tx_Queue;
 
 /* USER CODE END 0 */
 
-CAN_HandleTypeDef hcan1, hcan2;
+CAN_HandleTypeDef hcan1;
+CAN_HandleTypeDef hcan2;
 
 /* CAN1 init function */
 void MX_CAN1_Init(void)
@@ -225,13 +226,15 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef* canHandle)
   }
 }
 
+/*
 /* USER CODE BEGIN 1 */
+
 void CAN_setup( void )
 {
-	queue_init(&CAN1_Rx, sizeof(CAN_Generic_t));
-	queue_init(&CAN1_Tx, sizeof(CAN_Generic_t));
-	queue_init(&CAN2_Rx, sizeof(CAN_Generic_t));
-	queue_init(&CAN2_Tx, sizeof(CAN_Generic_t));
+	queue_init(&CAN1_Passthrough, sizeof(CAN_Generic_t));
+	queue_init(&CAN2_Passthrough, sizeof(CAN_Generic_t));
+	queue_init(&CAN1_Tx_Queue, sizeof(CAN_Generic_t));
+	queue_init(&CAN2_Tx_Queue, sizeof(CAN_Generic_t));
 
 	if (HAL_CAN_Start(&hcan1) != HAL_OK) {
 		Error_Handler();
@@ -304,6 +307,7 @@ void CAN_setup( void )
 
 }
 
+
 void CAN_Rx_Interrupt_Handle(CAN_HandleTypeDef *hcan, int fifo)
 {
 	__disable_irq();
@@ -326,10 +330,10 @@ void CAN_Rx_Interrupt_Handle(CAN_HandleTypeDef *hcan, int fifo)
 
 			// check that this is actually a VESC message
 			//if (vesc_type_ID <= VESC_CAN_PACKET_BMS_SOC_SOH_TEMP_STAT && vesc_ID <= 4) {
-			queue_add(&CAN2_Rx, &msg);
+			queue_add(&CAN2_Passthrough, &msg);
 			//}
 		} else if (hcan == &hcan2) {
-			queue_add(&CAN1_Rx, &msg);
+			queue_add(&CAN1_Passthrough, &msg);
 		}
 	}
 	__enable_irq();
@@ -338,6 +342,7 @@ void CAN_Rx_Interrupt_Handle(CAN_HandleTypeDef *hcan, int fifo)
 /**
  * CAN Tx interrupt deals with more CAN tx data than Mailboxes available
  */
+
 void CAN1_Tx_Interrupt_Handle(CAN_HandleTypeDef *hcan)
 {
 	__disable_irq();
@@ -346,9 +351,9 @@ void CAN1_Tx_Interrupt_Handle(CAN_HandleTypeDef *hcan)
 	uint32_t TxMailbox;
 	CAN_TxHeaderTypeDef Header;
 
-	if(!queue_empty(&CAN1_Tx)) // transmission queue is not empty
+	if(!queue_empty(&CAN1_Tx_Queue)) // transmission queue is not empty
 	{
-		queue_next(&CAN1_Tx, (void *)&msg); // grab first element in queue
+		queue_next(&CAN1_Tx_Queue, (void *)&msg); // grab first element in queue
 		// setting up the header for CAN
 		Header.DLC = msg.header.DLC;
 		Header.RTR = CAN_RTR_DATA;
@@ -362,6 +367,7 @@ void CAN1_Tx_Interrupt_Handle(CAN_HandleTypeDef *hcan)
 	__enable_irq();
 
 }
+
 
 void CAN2_Tx_Interrupt_Handle(CAN_HandleTypeDef *hcan)
 {
@@ -371,9 +377,9 @@ void CAN2_Tx_Interrupt_Handle(CAN_HandleTypeDef *hcan)
 	uint32_t TxMailbox;
 	CAN_TxHeaderTypeDef Header;
 
-	if(!queue_empty(&CAN2_Tx)) // transmission queue is not empty
+	if(!queue_empty(&CAN2_Tx_Queue)) // transmission queue is not empty
 	{
-		queue_next(&CAN2_Tx, (void *)&msg); // grab first element in queue
+		queue_next(&CAN2_Tx_Queue, (void *)&msg); // grab first element in queue
 		// setting up the header for CAN
 		Header.DLC = msg.header.DLC;
 		Header.RTR = CAN_RTR_DATA;
@@ -387,5 +393,6 @@ void CAN2_Tx_Interrupt_Handle(CAN_HandleTypeDef *hcan)
 	__enable_irq();
 
 }
+
 
 /* USER CODE END 1 */
