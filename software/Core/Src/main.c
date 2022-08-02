@@ -20,6 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "can.h"
+#include "iwdg.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -56,7 +57,7 @@
 // hcan2 == HV
 // 0 - left, eg FL (0) and RL (2)
 // 1 - right, eg FR (1) and RR (3)
-#define MCISO_ID 1
+#define MCISO_ID 0
 
 MCISO_HeartbeatState_t MCISO_heartbeatState;
 uint32_t can1Mb;
@@ -86,12 +87,18 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 ms_timer_t timer_heartbeat;
+ms_timer_t timer_WDG;
 inverter_state_t inverters;
 AMS_HeartbeatState_t AMS_hbState;
 
+// heartbeat
 void setup_heartbeat();
 void heartbeat_timer_cb(void *args);
 bool check_bad_heartbeat();
+
+// IWDG
+void setup_WDG();
+void WDG_timer_cb(void *args);
 
 /* USER CODE END 0 */
 
@@ -126,14 +133,16 @@ int main(void)
   MX_CAN1_Init();
   MX_CAN2_Init();
   MX_USART3_UART_Init();
+  //MX_IWDG_Init();
   /* USER CODE BEGIN 2 */
 
  	CAN_setup();
   	setup_heartbeat();
+  	setup_WDG();
 
-//	uint32_t data = 0;
-//	uint8_t *d = &data;
-//	uint8_t dA[4] = {d[3], d[2], d[1], d[0]};
+  	// Turning on failsafe lights
+	HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, SET);
+	HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, SET);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -149,9 +158,9 @@ int main(void)
 		check_bad_heartbeat();
 
 		timer_update(&timer_heartbeat, NULL);
+		timer_update(&timer_WDG, NULL);
 
 		while (queue_next(&CAN1_Passthrough, &msg)) {
-			//int free_lvl = HAL_CAN_GetTxMailboxesFreeLevel(&hcan1);
 
 			uint8_t vesc_ID = (msg.header.ExtId & 0xFF);
 			uint8_t vesc_type_ID = msg.header.ExtId >> 8;
@@ -233,9 +242,10 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_LSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
@@ -298,6 +308,24 @@ void setup_heartbeat() {
 	timer_start(&timer_heartbeat);
 }
 
+bool WDG_reset = false;
+
+void setup_WDG() {
+	MX_IWDG_Init();
+
+	timer_WDG = timer_init(50, true, WDG_timer_cb);
+	timer_start(&timer_WDG);
+
+	// check if started from watchdog reset
+
+	// check iwdg
+	if (__HAL_RCC_GET_FLAG(RCC_FLAG_IWDGRST)) {
+		WDG_reset = true;
+		HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, RESET);
+		HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, RESET);
+	}
+}
+
 
 void heartbeat_timer_cb(void *args) {
 	MCISO_Heartbeat_t msg = Compose_MCISO_Heartbeat(MCISO_ID,
@@ -315,6 +343,12 @@ void heartbeat_timer_cb(void *args) {
 	{
 		queue_add(&CAN1_Tx_Queue, &msg);
 	}
+}
+
+
+void WDG_timer_cb(void *args)
+{
+	HAL_IWDG_Refresh(&hiwdg);
 
 }
 
