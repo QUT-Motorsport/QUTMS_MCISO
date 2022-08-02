@@ -33,7 +33,7 @@
 #include <CAN_VESC.h>
 #include <CAN_MCISO.h>
 #include <Timer.h>
-#include <CAN_AMS.h>
+#include <CAN_BMU.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -89,7 +89,7 @@ void SystemClock_Config(void);
 ms_timer_t timer_heartbeat;
 ms_timer_t timer_WDG;
 inverter_state_t inverters;
-AMS_HeartbeatState_t AMS_hbState;
+BMU_HeartbeatState_t BMU_hbState;
 
 // heartbeat
 void setup_heartbeat();
@@ -194,14 +194,13 @@ int main(void)
 		}
 
 		while (queue_next(&CAN2_Passthrough, &msg)) {
-			if (msg.header.ExtId == AMS_Heartbeat_ID) {
-				Parse_AMS_Heartbeat(msg.data, &AMS_hbState);
+			if (msg.header.ExtId == BMU_Heartbeat_ID) {
+				Parse_BMU_Heartbeat(msg.data, &BMU_hbState);
 			}
 
 			// if we aren't in precharge / TS active (eg TS is not powered), don't forward anything
 			// bc no inverters
-			if (!((AMS_hbState.stateID == AMS_STATE_PRECHARGE)
-					|| (AMS_hbState.stateID == AMS_STATE_TS_ACTIVE))) {
+			if (BMU_hbState.stateID != BMU_STATE_TS_ACTIVE) {
 				continue;
 			}
 			if( HAL_CAN_GetTxMailboxesFreeLevel(&hcan2) > 0)
