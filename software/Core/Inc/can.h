@@ -1,3 +1,4 @@
+/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
   * @file    can.h
@@ -6,16 +7,16 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
-  * All rights reserved.</center></h2>
+  * Copyright (c) 2022 STMicroelectronics.
+  * All rights reserved.
   *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
   *
   ******************************************************************************
   */
+/* USER CODE END Header */
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __CAN_H__
 #define __CAN_H__
@@ -28,13 +29,21 @@ extern "C" {
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
-
+#include <queue.h>
 /* USER CODE END Includes */
 
 extern CAN_HandleTypeDef hcan1;
+
 extern CAN_HandleTypeDef hcan2;
 
 /* USER CODE BEGIN Private defines */
+extern uint32_t txMailbox_CAN1;
+extern uint32_t txMailbox_CAN2;
+
+extern message_queue_t CAN1_Rx;
+extern message_queue_t CAN2_Rx;
+extern message_queue_t CAN1_Tx;
+extern message_queue_t CAN2_Tx;
 
 /* USER CODE END Private defines */
 
@@ -42,7 +51,10 @@ void MX_CAN1_Init(void);
 void MX_CAN2_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+void CAN_setup( void );
+HAL_StatusTypeDef send_can_msg(CAN_HandleTypeDef *hcan, CAN_TxHeaderTypeDef *pHeader, uint8_t aData[]);
+void can_tx_interrupt(CAN_HandleTypeDef *hcan);
+void can_rx_interrupt(CAN_HandleTypeDef *hcan, int fifo);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus
@@ -51,4 +63,3 @@ void MX_CAN2_Init(void);
 
 #endif /* __CAN_H__ */
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

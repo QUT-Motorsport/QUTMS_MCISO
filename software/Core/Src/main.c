@@ -20,6 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "can.h"
+#include "iwdg.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -29,7 +30,11 @@
 #include <sys/unistd.h>
 #include <string.h>
 #include <stdlib.h>
-#include "VESC_CAN_Messages.h"
+#include <CAN_VESC.h>
+#include <CAN_MCISO.h>
+#include <Timer.h>
+#include <CAN_BMU.h>
+#include <CAN_VCU.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -51,6 +56,27 @@
 /* USER CODE BEGIN PV */
 // hcan1 == GLV
 // hcan2 == HV
+// 0 - left, eg FL (0) and RL (2)
+// 1 - right, eg FR (1) and RR (3)
+#define MCISO_ID 1
+
+MCISO_HeartbeatState_t MCISO_heartbeatState;
+
+#define INVERTER_COUNT 2
+#define HEARTBEAT_TIMEOUT 300U
+
+typedef struct heartbeat_state {
+	bool BMU;
+	bool VCU_CTRL;
+
+	bool inverter[INVERTER_COUNT];
+
+	uint32_t hb_inv_start[INVERTER_COUNT];
+
+	uint32_t hb_BMU_start;
+	uint32_t hb_VCU_CTRL_start;
+} heartbeat_state_t;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -61,210 +87,202 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+ms_timer_t timer_heartbeat;
+heartbeat_state_t hbStates;
+BMU_HeartbeatState_t BMU_hbState;
+
+// heartbeat
+void setup_heartbeat();
+void heartbeat_timer_cb(void *args);
+bool check_bad_heartbeat();
+
+// IWDG
+void setup_WDG();
 
 /* USER CODE END 0 */
 
 /**
- * @brief  The application entry point.
- * @retval int
- */
+  * @brief  The application entry point.
+  * @retval int
+  */
 int main(void)
 {
-	/* USER CODE BEGIN 1 */
+  /* USER CODE BEGIN 1 */
 
-	/* USER CODE END 1 */
+  /* USER CODE END 1 */
 
-	/* MCU Configuration--------------------------------------------------------*/
+  /* MCU Configuration--------------------------------------------------------*/
 
-	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-	HAL_Init();
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  HAL_Init();
 
-	/* USER CODE BEGIN Init */
+  /* USER CODE BEGIN Init */
 
-	/* USER CODE END Init */
+  /* USER CODE END Init */
 
-	/* Configure the system clock */
-	SystemClock_Config();
+  /* Configure the system clock */
+  SystemClock_Config();
 
-	/* USER CODE BEGIN SysInit */
+  /* USER CODE BEGIN SysInit */
 
-	/* USER CODE END SysInit */
+  /* USER CODE END SysInit */
 
-	/* Initialize all configured peripherals */
-	MX_GPIO_Init();
-	MX_CAN1_Init();
-	MX_CAN2_Init();
-	MX_USART3_UART_Init();
-	/* USER CODE BEGIN 2 */
+  /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_CAN1_Init();
+  MX_CAN2_Init();
+  MX_USART3_UART_Init();
+  MX_IWDG_Init();
+  /* USER CODE BEGIN 2 */
 
-	queue_init(&c1Passthrough, sizeof(CAN_Generic_t), 25);
-	queue_init(&c2Passthrough, sizeof(CAN_Generic_t), 25);
+	CAN_setup();
+	setup_heartbeat();
+	setup_WDG();
 
-	if(HAL_CAN_Start(&hcan1) != HAL_OK)
-	{
-		Error_Handler();
-	}
+	// Turning on failsafe lights
+	HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, SET);
+	HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, SET);
+  /* USER CODE END 2 */
 
-	if(HAL_CAN_Start(&hcan2) != HAL_OK)
-	{
-		Error_Handler();
-	}
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
 
-	CAN_FilterTypeDef GLVFilterConfig;
+	CAN_MSG_Generic_t msg;
+	CAN_TxHeaderTypeDef header;
 
-	GLVFilterConfig.FilterBank = 0;
-	GLVFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
-	GLVFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
-	GLVFilterConfig.FilterIdHigh = 0x0000;
-	GLVFilterConfig.FilterIdLow = 0x0000;
-	GLVFilterConfig.FilterMaskIdHigh = 0x0000;
-	GLVFilterConfig.FilterMaskIdLow = 0x0000;
-	GLVFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0;
-	GLVFilterConfig.FilterActivation = ENABLE;
-	GLVFilterConfig.SlaveStartFilterBank = 14;
+	//bool first_inv_msg = false;
 
-	if(HAL_CAN_ConfigFilter(&hcan1, &GLVFilterConfig) != HAL_OK)
-	{
-		Error_Handler();
-	}
+	while (1) {
+		check_bad_heartbeat();
 
-	CAN_FilterTypeDef HVFilterConfig;
+		timer_update(&timer_heartbeat, NULL);
+		//timer_update(&timer_WDG, NULL);
 
-	HVFilterConfig.FilterBank = 14;
-	HVFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
-	HVFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
-	HVFilterConfig.FilterIdHigh = 0x0000;
-	HVFilterConfig.FilterIdLow = 0x0000;
-	HVFilterConfig.FilterMaskIdHigh = 0x0000;
-	HVFilterConfig.FilterMaskIdLow = 0x0000;
-	HVFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0;
-	HVFilterConfig.FilterActivation = ENABLE;
-	HVFilterConfig.SlaveStartFilterBank = 14;
+		// inverter to car
+		while (queue_next(&CAN2_Rx, &msg)) {
+			if (msg.ID_TYPE == 1) {
+				// extended ID, check if VESC
+				uint8_t vesc_ID = (msg.ID & 0xFF);
+				uint8_t vesc_type_ID = msg.ID >> 8;
 
-	if(HAL_CAN_ConfigFilter(&hcan2, &HVFilterConfig) != HAL_OK)
-	{
-		Error_Handler();
-	}
+				// check that this is actually a VESC message
+				if (vesc_type_ID <= VESC_CAN_PACKET_BMS_SOC_SOH_TEMP_STAT) {
+					if (vesc_ID == (MCISO_ID)) {
+						hbStates.hb_inv_start[0] = HAL_GetTick();
+						hbStates.inverter[0] = true;
+						MCISO_heartbeatState.errorFlags.HB_INV0 = 0;
+					} else if (vesc_ID == (MCISO_ID + 2)) {
+						hbStates.hb_inv_start[1] = HAL_GetTick();
+						hbStates.inverter[1] = true;
+						MCISO_heartbeatState.errorFlags.HB_INV1 = 0;
+					}
+				}
+			}
 
-	if (HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING)
-			!= HAL_OK) {
-		Error_Handler();
-	}
-	if (HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO1_MSG_PENDING)
-			!= HAL_OK) {
-		Error_Handler();
-	}
+			// msg from inverter side, just forward
+			header.ExtId = msg.ID;
+			header.StdId = msg.ID;
+			header.IDE = msg.ID_TYPE == 1 ? CAN_ID_EXT : CAN_ID_STD;
+			header.RTR = CAN_RTR_DATA;
+			header.DLC = msg.DLC;
 
-	if (HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING)
-			!= HAL_OK) {
-		Error_Handler();
-	}
-	if (HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO1_MSG_PENDING)
-			!= HAL_OK) {
-		Error_Handler();
-	}
-//	uint32_t data = 0;
-//	uint8_t *d = &data;
-//	uint8_t dA[4] = {d[3], d[2], d[1], d[0]};
-	/* USER CODE END 2 */
-
-
-	/* Infinite loop */
-	/* USER CODE BEGIN WHILE */
-	while (1)
-	{
-		while(!queue_empty(&c1Passthrough))
-		{
-			while(HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) <= 0);
-			CAN_Generic_t msg;
-			queue_next(&c1Passthrough, &msg);
-			CAN_TxHeaderTypeDef header = {
-					.DLC = msg.header.DLC,
-					.ExtId = msg.header.ExtId,
-					.IDE = msg.header.IDE,
-			};
-			HAL_CAN_AddTxMessage(&hcan1, &header, msg.data, &can1Mb);
+			send_can_msg(&hcan1, &header, msg.data);
 		}
 
-		while(!queue_empty(&c2Passthrough))
-		{
-			while(HAL_CAN_GetTxMailboxesFreeLevel(&hcan2) <= 0);
-			CAN_Generic_t msg;
-			queue_next(&c2Passthrough, &msg);
-			CAN_TxHeaderTypeDef header = {
-					.DLC = msg.header.DLC,
-					.ExtId = msg.header.ExtId,
-					.IDE = msg.header.IDE,
-			};
-			HAL_CAN_AddTxMessage(&hcan2, &header, msg.data, &can2Mb);
+		// car to inverter
+		while (queue_next(&CAN1_Rx, &msg)) {
+			if (msg.ID == BMU_Heartbeat_ID) {
+				Parse_BMU_Heartbeat(msg.data, &BMU_hbState);
+
+				hbStates.hb_BMU_start = HAL_GetTick();
+				hbStates.BMU = true;
+				MCISO_heartbeatState.errorFlags.HB_BMU = 0;
+
+				if (BMU_hbState.stateID == BMU_STATE_TS_ACTIVE) {
+					MCISO_heartbeatState.stateID = MCISO_STATE_FORWARD;
+				} else {
+					MCISO_heartbeatState.stateID = MCISO_STATE_START;
+				}
+			} else if (msg.ID == (VCU_Heartbeat_ID | VCU_ID_CTRL)) {
+				// control VCU
+				hbStates.hb_VCU_CTRL_start = HAL_GetTick();
+				hbStates.VCU_CTRL = true;
+				MCISO_heartbeatState.errorFlags.HB_VCU_CTRL = 0;
+			} else {
+				// if bmu in TS active
+				if ((BMU_hbState.stateID == BMU_STATE_TS_ACTIVE) && (hbStates.BMU)) {
+					// if message for these inverters, forward on
+					uint8_t vesc_ID = (msg.ID & 0xFF);
+					uint8_t vesc_type_ID = msg.ID >> 8;
+
+					// check that this is actually a VESC message
+					if (vesc_type_ID <= VESC_CAN_PACKET_BMS_SOC_SOH_TEMP_STAT) {
+						if ((vesc_ID == (MCISO_ID))
+								|| (vesc_ID == (MCISO_ID + 2))) {
+							// this good so forward
+							header.ExtId = msg.ID;
+							header.StdId = msg.ID;
+							header.IDE =
+									msg.ID_TYPE == 1 ? CAN_ID_EXT : CAN_ID_STD;
+							header.RTR = CAN_RTR_DATA;
+							header.DLC = msg.DLC;
+
+							send_can_msg(&hcan2, &header, msg.data);
+						}
+					}
+				}
+			}
+
 		}
 
-//		VESC_Ping_t ping = Compose_VESC_Ping(2);
-//
-//		CAN_TxHeaderTypeDef header =
-//		{
-//				.ExtId = ping.id,
-//				.IDE = CAN_ID_EXT,
-//				.RTR = CAN_RTR_DATA,
-//				.DLC = 0,
-//				.TransmitGlobalTime = DISABLE
-//		};
-//		while(HAL_CAN_GetTxMailboxesFreeLevel(&hcan2) == 0);
-//		HAL_CAN_AddTxMessage(&hcan2, &header, NULL, &can2Mb);
-//
-//		VESC_SetDuty_t duty = Compose_VESC_SetDuty(2, 0.69);
-//		CAN_TxHeaderTypeDef header2 =
-//		{
-//				.ExtId = duty.id,
-//				.IDE = CAN_ID_EXT,
-//				.RTR = CAN_RTR_DATA,
-//				.DLC = sizeof(duty.data),
-//				.TransmitGlobalTime = DISABLE
-//		};
-//		while(HAL_CAN_GetTxMailboxesFreeLevel(&hcan2) == 0);
-//		HAL_CAN_AddTxMessage(&hcan2, &header2, duty.data, &can2Mb);
-//		HAL_Delay(20);
+		//HAL_IWDG_Refresh(&hiwdg);
 
-		/* USER CODE END WHILE */
+    /* USER CODE END WHILE */
 
-		/* USER CODE BEGIN 3 */
+    /* USER CODE BEGIN 3 */
 	}
-	/* USER CODE END 3 */
+  /* USER CODE END 3 */
 }
 
 /**
- * @brief System Clock Configuration
- * @retval None
- */
+  * @brief System Clock Configuration
+  * @retval None
+  */
 void SystemClock_Config(void)
 {
-	RCC_OscInitTypeDef RCC_OscInitStruct = {0};
-	RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
-	/** Initializes the RCC Oscillators according to the specified parameters
-	 * in the RCC_OscInitTypeDef structure.
-	 */
-	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
-	RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-	RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
-	if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
-	{
-		Error_Handler();
-	}
-	/** Initializes the CPU, AHB and APB buses clocks
-	 */
-	RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-			|RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
-	RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-	RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
-	RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+  /** Initializes the RCC Oscillators according to the specified parameters
+  * in the RCC_OscInitTypeDef structure.
+  */
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI|RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLM = 16;
+  RCC_OscInitStruct.PLL.PLLN = 192;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+  RCC_OscInitStruct.PLL.PLLQ = 4;
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  {
+    Error_Handler();
+  }
 
-	if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
-	{
-		Error_Handler();
-	}
+  /** Initializes the CPU, AHB and APB buses clocks
+  */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
+
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_3) != HAL_OK)
+  {
+    Error_Handler();
+  }
 }
 
 /* USER CODE BEGIN 4 */
@@ -275,66 +293,115 @@ int _write(int file, char *data, int len) {
 		return -1;
 	}
 	HAL_StatusTypeDef s = HAL_UART_Transmit(&huart3, (uint8_t*) data, len,
-			HAL_MAX_DELAY);
+	HAL_MAX_DELAY);
 
 	return (s == HAL_OK ? len : 0);
 }
 #endif
 
-void handleCAN(CAN_HandleTypeDef *hcan, int fifo) {
-	__disable_irq();
+bool check_bad_heartbeat() {
+	bool success = true;
 
-	// Iterate over the CAN FIFO buffer, adding all CAN messages to the CAN Queue.
-	CAN_Generic_t msg;
-
-	while (HAL_CAN_GetRxFifoFillLevel(hcan, fifo) > 0) {
-		if (HAL_CAN_GetRxMessage(hcan, fifo, &(msg.header), msg.data)
-				!= HAL_OK) {
-			printf("Failed to recieve good can message\r\n");
-		}
-
-		if(hcan == &hcan1)
-		{
-			queue_add(&c2Passthrough, &msg);
-		} else if(hcan == &hcan2)
-		{
-			queue_add(&c1Passthrough, &msg);
-		}
+	if ((HAL_GetTick() - hbStates.hb_inv_start[0]) > HEARTBEAT_TIMEOUT) {
+		success = false;
+		hbStates.inverter[0] = false;
+		MCISO_heartbeatState.errorFlags.HB_INV0 = 1;
 	}
-	__enable_irq();
+
+	if ((HAL_GetTick() - hbStates.hb_inv_start[1]) > HEARTBEAT_TIMEOUT) {
+		success = false;
+		hbStates.inverter[1] = false;
+		MCISO_heartbeatState.errorFlags.HB_INV1 = 1;
+	}
+
+	if ((HAL_GetTick() - hbStates.hb_BMU_start) > HEARTBEAT_TIMEOUT) {
+		success = false;
+		hbStates.BMU = false;
+		MCISO_heartbeatState.errorFlags.HB_BMU = 1;
+		MCISO_heartbeatState.stateID = MCISO_STATE_START;
+	}
+
+	if ((HAL_GetTick() - hbStates.hb_VCU_CTRL_start) > HEARTBEAT_TIMEOUT) {
+		success = false;
+		hbStates.VCU_CTRL = false;
+		MCISO_heartbeatState.errorFlags.HB_VCU_CTRL = 1;
+	}
+
+	return success;
 }
+
+void setup_heartbeat() {
+	MCISO_heartbeatState.stateID = MCISO_STATE_START;
+	MCISO_heartbeatState.errorFlags.rawMem = 0;
+	timer_heartbeat = timer_init(50, true, heartbeat_timer_cb);
+
+	hbStates.hb_inv_start[0] = 0;
+	hbStates.hb_inv_start[1] = 0;
+	hbStates.hb_BMU_start = 0;
+	hbStates.hb_VCU_CTRL_start = 0;
+
+
+	timer_start(&timer_heartbeat);
+}
+
+bool WDG_reset = false;
+
+void setup_WDG() {
+	MX_IWDG_Init();
+
+	//timer_WDG = timer_init(50, true, WDG_timer_cb);
+	//timer_start(&timer_WDG);
+
+	// check if started from watchdog reset
+
+	// check iwdg
+	if (__HAL_RCC_GET_FLAG(RCC_FLAG_IWDGRST)) {
+		WDG_reset = true;
+		HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, RESET);
+		HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, RESET);
+		MCISO_heartbeatState.errorFlags.WATCHDOG = 1;
+	}
+}
+
+void heartbeat_timer_cb(void *args) {
+	MCISO_Heartbeat_t msg = Compose_MCISO_Heartbeat(MCISO_ID,
+			&MCISO_heartbeatState);
+	CAN_TxHeaderTypeDef header = { .ExtId = msg.id, .IDE =
+	CAN_ID_EXT, .RTR = CAN_RTR_DATA, .DLC = sizeof(msg.data),
+			.TransmitGlobalTime = DISABLE };
+
+	send_can_msg(&hcan1, &header, msg.data);
+}
+
 /* USER CODE END 4 */
 
 /**
- * @brief  This function is executed in case of error occurrence.
- * @retval None
- */
+  * @brief  This function is executed in case of error occurrence.
+  * @retval None
+  */
 void Error_Handler(void)
 {
-	/* USER CODE BEGIN Error_Handler_Debug */
+  /* USER CODE BEGIN Error_Handler_Debug */
 	/* User can add his own implementation to report the HAL error return state */
 	__disable_irq();
-	while (1)
-	{
+	while (1) {
 	}
-	/* USER CODE END Error_Handler_Debug */
+  /* USER CODE END Error_Handler_Debug */
 }
 
 #ifdef  USE_FULL_ASSERT
 /**
- * @brief  Reports the name of the source file and the source line number
- *         where the assert_param error has occurred.
- * @param  file: pointer to the source file name
- * @param  line: assert_param error line source number
- * @retval None
- */
+  * @brief  Reports the name of the source file and the source line number
+  *         where the assert_param error has occurred.
+  * @param  file: pointer to the source file name
+  * @param  line: assert_param error line source number
+  * @retval None
+  */
 void assert_failed(uint8_t *file, uint32_t line)
 {
-	/* USER CODE BEGIN 6 */
+  /* USER CODE BEGIN 6 */
 	/* User can add his own implementation to report the file name and line number,
      ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-	/* USER CODE END 6 */
+  /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
