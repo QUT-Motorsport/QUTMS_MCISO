@@ -34,6 +34,7 @@
 #include <CAN_MCISO.h>
 #include <Timer.h>
 #include <CAN_BMU.h>
+#include <CAN_VCU.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -57,24 +58,24 @@
 // hcan2 == HV
 // 0 - left, eg FL (0) and RL (2)
 // 1 - right, eg FR (1) and RR (3)
-#define MCISO_ID 0
+#define MCISO_ID 1
 
 MCISO_HeartbeatState_t MCISO_heartbeatState;
-uint32_t can1Mb;
-uint32_t can2Mb;
-
-message_queue_t CAN1_Passthrough, CAN2_Passthrough;
-message_queue_t CAN1_Tx_Queue, CAN2_Tx_Queue;
-
 
 #define INVERTER_COUNT 2
 #define HEARTBEAT_TIMEOUT 300U
 
-typedef struct inverter_state {
+typedef struct heartbeat_state {
+	bool BMU;
+	bool VCU_CTRL;
+
 	bool inverter[INVERTER_COUNT];
 
 	uint32_t hb_inv_start[INVERTER_COUNT];
-} inverter_state_t;
+
+	uint32_t hb_BMU_start;
+	uint32_t hb_VCU_CTRL_start;
+} heartbeat_state_t;
 
 /* USER CODE END PV */
 
@@ -87,8 +88,7 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 ms_timer_t timer_heartbeat;
-ms_timer_t timer_WDG;
-inverter_state_t inverters;
+heartbeat_state_t hbStates;
 BMU_HeartbeatState_t BMU_hbState;
 
 // heartbeat
@@ -98,7 +98,6 @@ bool check_bad_heartbeat();
 
 // IWDG
 void setup_WDG();
-void WDG_timer_cb(void *args);
 
 /* USER CODE END 0 */
 
@@ -133,14 +132,14 @@ int main(void)
   MX_CAN1_Init();
   MX_CAN2_Init();
   MX_USART3_UART_Init();
-  //MX_IWDG_Init();
+  MX_IWDG_Init();
   /* USER CODE BEGIN 2 */
 
- 	CAN_setup();
-  	setup_heartbeat();
-  	setup_WDG();
+	CAN_setup();
+	setup_heartbeat();
+	setup_WDG();
 
-  	// Turning on failsafe lights
+	// Turning on failsafe lights
 	HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, SET);
 	HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, SET);
   /* USER CODE END 2 */
@@ -148,77 +147,93 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-	CAN_Generic_t msg;
+	CAN_MSG_Generic_t msg;
 	CAN_TxHeaderTypeDef header;
 
 	//bool first_inv_msg = false;
-
 
 	while (1) {
 		check_bad_heartbeat();
 
 		timer_update(&timer_heartbeat, NULL);
-		timer_update(&timer_WDG, NULL);
+		//timer_update(&timer_WDG, NULL);
 
-		while (queue_next(&CAN1_Passthrough, &msg)) {
+		// inverter to car
+		while (queue_next(&CAN2_Rx, &msg)) {
+			if (msg.ID_TYPE == 1) {
+				// extended ID, check if VESC
+				uint8_t vesc_ID = (msg.ID & 0xFF);
+				uint8_t vesc_type_ID = msg.ID >> 8;
 
-			uint8_t vesc_ID = (msg.header.ExtId & 0xFF);
-			uint8_t vesc_type_ID = msg.header.ExtId >> 8;
-
-			// check that this is actually a VESC message
-			if (vesc_type_ID <= VESC_CAN_PACKET_BMS_SOC_SOH_TEMP_STAT) {
-				if (vesc_ID == (MCISO_ID)) {
-					inverters.hb_inv_start[0] = HAL_GetTick();
-					inverters.inverter[0] = true;
-					MCISO_heartbeatState.errorFlags.HB_INV0 = 0;
-				} else if (vesc_ID == (MCISO_ID + 2)) {
-					inverters.hb_inv_start[1] = HAL_GetTick();
-					inverters.inverter[1] = true;
-					MCISO_heartbeatState.errorFlags.HB_INV1 = 0;
+				// check that this is actually a VESC message
+				if (vesc_type_ID <= VESC_CAN_PACKET_BMS_SOC_SOH_TEMP_STAT) {
+					if (vesc_ID == (MCISO_ID)) {
+						hbStates.hb_inv_start[0] = HAL_GetTick();
+						hbStates.inverter[0] = true;
+						MCISO_heartbeatState.errorFlags.HB_INV0 = 0;
+					} else if (vesc_ID == (MCISO_ID + 2)) {
+						hbStates.hb_inv_start[1] = HAL_GetTick();
+						hbStates.inverter[1] = true;
+						MCISO_heartbeatState.errorFlags.HB_INV1 = 0;
+					}
 				}
 			}
 
-			if( HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) > 0)
-			{
-				header.DLC = msg.header.DLC;
-				header.ExtId = msg.header.ExtId;
-				header.IDE = msg.header.IDE;
-				header.RTR = msg.header.RTR;
-				header.TransmitGlobalTime = DISABLE;
-				HAL_CAN_AddTxMessage(&hcan1, &header, msg.data, &can1Mb);
-			}
-			else
-			{
-				queue_add(&CAN1_Tx_Queue, &msg);
-			}
+			// msg from inverter side, just forward
+			header.ExtId = msg.ID;
+			header.StdId = msg.ID;
+			header.IDE = msg.ID_TYPE == 1 ? CAN_ID_EXT : CAN_ID_STD;
+			header.RTR = CAN_RTR_DATA;
+			header.DLC = msg.DLC;
+
+			send_can_msg(&hcan1, &header, msg.data);
 		}
 
-		while (queue_next(&CAN2_Passthrough, &msg)) {
-			if (msg.header.ExtId == BMU_Heartbeat_ID) {
+		// car to inverter
+		while (queue_next(&CAN1_Rx, &msg)) {
+			if (msg.ID == BMU_Heartbeat_ID) {
 				Parse_BMU_Heartbeat(msg.data, &BMU_hbState);
+
+				hbStates.hb_BMU_start = HAL_GetTick();
+				hbStates.BMU = true;
+				MCISO_heartbeatState.errorFlags.HB_BMU = 0;
+
+				if (BMU_hbState.stateID == BMU_STATE_TS_ACTIVE) {
+					MCISO_heartbeatState.stateID = MCISO_STATE_FORWARD;
+				} else {
+					MCISO_heartbeatState.stateID = MCISO_STATE_START;
+				}
+			} else if (msg.ID == (VCU_Heartbeat_ID | VCU_ID_CTRL)) {
+				// control VCU
+				hbStates.hb_VCU_CTRL_start = HAL_GetTick();
+				hbStates.VCU_CTRL = true;
+				MCISO_heartbeatState.errorFlags.HB_VCU_CTRL = 0;
+			} else {
+				// if bmu in TS active
+				if ((BMU_hbState.stateID == BMU_STATE_TS_ACTIVE) && (hbStates.BMU)) {
+					// if message for these inverters, forward on
+					uint8_t vesc_ID = (msg.ID & 0xFF);
+					uint8_t vesc_type_ID = msg.ID >> 8;
+
+					// check that this is actually a VESC message
+					if (vesc_type_ID <= VESC_CAN_PACKET_BMS_SOC_SOH_TEMP_STAT) {
+						if ((vesc_ID == (MCISO_ID))
+								|| (vesc_ID == (MCISO_ID + 2))) {
+							// this good so forward
+							header.ExtId = msg.ID;
+							header.StdId = msg.ID;
+							header.IDE =
+									msg.ID_TYPE == 1 ? CAN_ID_EXT : CAN_ID_STD;
+							header.RTR = CAN_RTR_DATA;
+							header.DLC = msg.DLC;
+
+							send_can_msg(&hcan2, &header, msg.data);
+						}
+					}
+				}
 			}
 
-			// if we aren't in precharge / TS active (eg TS is not powered), don't forward anything
-			// bc no inverters
-			if (BMU_hbState.stateID != BMU_STATE_TS_ACTIVE) {
-				continue;
-			}
-			if( HAL_CAN_GetTxMailboxesFreeLevel(&hcan2) > 0)
-			{
-				header.DLC = msg.header.DLC;
-				header.ExtId = msg.header.ExtId;
-				header.IDE = msg.header.IDE;
-				header.RTR = msg.header.RTR;
-				header.TransmitGlobalTime = DISABLE;
-				HAL_CAN_AddTxMessage(&hcan2, &header, msg.data, &can2Mb);
-			}
-			else
-			{
-				queue_add(&CAN2_Tx_Queue, &msg);
-			}
 		}
-
-
 
 		//HAL_IWDG_Refresh(&hiwdg);
 
@@ -241,11 +256,15 @@ void SystemClock_Config(void)
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_LSI;
-  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI|RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.LSIState = RCC_LSI_ON;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLM = 16;
+  RCC_OscInitStruct.PLL.PLLN = 192;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+  RCC_OscInitStruct.PLL.PLLQ = 4;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -255,12 +274,12 @@ void SystemClock_Config(void)
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_3) != HAL_OK)
   {
     Error_Handler();
   }
@@ -283,26 +302,44 @@ int _write(int file, char *data, int len) {
 bool check_bad_heartbeat() {
 	bool success = true;
 
-	if ((HAL_GetTick() - inverters.hb_inv_start[0]) > HEARTBEAT_TIMEOUT) {
+	if ((HAL_GetTick() - hbStates.hb_inv_start[0]) > HEARTBEAT_TIMEOUT) {
 		success = false;
-		inverters.inverter[0] = false;
+		hbStates.inverter[0] = false;
 		MCISO_heartbeatState.errorFlags.HB_INV0 = 1;
 	}
 
-	if ((HAL_GetTick() - inverters.hb_inv_start[1]) > HEARTBEAT_TIMEOUT) {
+	if ((HAL_GetTick() - hbStates.hb_inv_start[1]) > HEARTBEAT_TIMEOUT) {
 		success = false;
-		inverters.inverter[1] = false;
+		hbStates.inverter[1] = false;
 		MCISO_heartbeatState.errorFlags.HB_INV1 = 1;
+	}
+
+	if ((HAL_GetTick() - hbStates.hb_BMU_start) > HEARTBEAT_TIMEOUT) {
+		success = false;
+		hbStates.BMU = false;
+		MCISO_heartbeatState.errorFlags.HB_BMU = 1;
+		MCISO_heartbeatState.stateID = MCISO_STATE_START;
+	}
+
+	if ((HAL_GetTick() - hbStates.hb_VCU_CTRL_start) > HEARTBEAT_TIMEOUT) {
+		success = false;
+		hbStates.VCU_CTRL = false;
+		MCISO_heartbeatState.errorFlags.HB_VCU_CTRL = 1;
 	}
 
 	return success;
 }
 
 void setup_heartbeat() {
+	MCISO_heartbeatState.stateID = MCISO_STATE_START;
+	MCISO_heartbeatState.errorFlags.rawMem = 0;
 	timer_heartbeat = timer_init(50, true, heartbeat_timer_cb);
 
-	inverters.hb_inv_start[0] = 0;
-	inverters.hb_inv_start[1] = 0;
+	hbStates.hb_inv_start[0] = 0;
+	hbStates.hb_inv_start[1] = 0;
+	hbStates.hb_BMU_start = 0;
+	hbStates.hb_VCU_CTRL_start = 0;
+
 
 	timer_start(&timer_heartbeat);
 }
@@ -312,8 +349,8 @@ bool WDG_reset = false;
 void setup_WDG() {
 	MX_IWDG_Init();
 
-	timer_WDG = timer_init(50, true, WDG_timer_cb);
-	timer_start(&timer_WDG);
+	//timer_WDG = timer_init(50, true, WDG_timer_cb);
+	//timer_start(&timer_WDG);
 
 	// check if started from watchdog reset
 
@@ -322,9 +359,9 @@ void setup_WDG() {
 		WDG_reset = true;
 		HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, RESET);
 		HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, RESET);
+		MCISO_heartbeatState.errorFlags.WATCHDOG = 1;
 	}
 }
-
 
 void heartbeat_timer_cb(void *args) {
 	MCISO_Heartbeat_t msg = Compose_MCISO_Heartbeat(MCISO_ID,
@@ -333,22 +370,7 @@ void heartbeat_timer_cb(void *args) {
 	CAN_ID_EXT, .RTR = CAN_RTR_DATA, .DLC = sizeof(msg.data),
 			.TransmitGlobalTime = DISABLE };
 
-	// send heartbeat on all main CANbus
-	if(HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) > 0)
-	{
-		HAL_CAN_AddTxMessage(&hcan1, &header, msg.data, &can1Mb);
-	}
-	else
-	{
-		queue_add(&CAN1_Tx_Queue, &msg);
-	}
-}
-
-
-void WDG_timer_cb(void *args)
-{
-	HAL_IWDG_Refresh(&hiwdg);
-
+	send_can_msg(&hcan1, &header, msg.data);
 }
 
 /* USER CODE END 4 */

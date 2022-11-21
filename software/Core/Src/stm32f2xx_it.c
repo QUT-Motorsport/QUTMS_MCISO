@@ -207,7 +207,7 @@ void SysTick_Handler(void)
 void CAN1_TX_IRQHandler(void)
 {
   /* USER CODE BEGIN CAN1_TX_IRQn 0 */
-	CAN1_Tx_Interrupt_Handle(&hcan1);
+	can_tx_interrupt(&hcan1);
   /* USER CODE END CAN1_TX_IRQn 0 */
   HAL_CAN_IRQHandler(&hcan1);
   /* USER CODE BEGIN CAN1_TX_IRQn 1 */
@@ -221,7 +221,7 @@ void CAN1_TX_IRQHandler(void)
 void CAN1_RX0_IRQHandler(void)
 {
   /* USER CODE BEGIN CAN1_RX0_IRQn 0 */
-	CAN_Rx_Interrupt_Handle(&hcan1, CAN_RX_FIFO0);
+	can_rx_interrupt(&hcan1, CAN_RX_FIFO0);
   /* USER CODE END CAN1_RX0_IRQn 0 */
   HAL_CAN_IRQHandler(&hcan1);
   /* USER CODE BEGIN CAN1_RX0_IRQn 1 */
@@ -235,7 +235,7 @@ void CAN1_RX0_IRQHandler(void)
 void CAN1_RX1_IRQHandler(void)
 {
   /* USER CODE BEGIN CAN1_RX1_IRQn 0 */
-	CAN_Rx_Interrupt_Handle(&hcan1, CAN_RX_FIFO1);
+	can_rx_interrupt(&hcan1, CAN_RX_FIFO1);
   /* USER CODE END CAN1_RX1_IRQn 0 */
   HAL_CAN_IRQHandler(&hcan1);
   /* USER CODE BEGIN CAN1_RX1_IRQn 1 */
@@ -249,7 +249,7 @@ void CAN1_RX1_IRQHandler(void)
 void CAN2_TX_IRQHandler(void)
 {
   /* USER CODE BEGIN CAN2_TX_IRQn 0 */
-	CAN2_Tx_Interrupt_Handle(&hcan2);
+	can_tx_interrupt(&hcan2);
   /* USER CODE END CAN2_TX_IRQn 0 */
   HAL_CAN_IRQHandler(&hcan2);
   /* USER CODE BEGIN CAN2_TX_IRQn 1 */
@@ -263,7 +263,7 @@ void CAN2_TX_IRQHandler(void)
 void CAN2_RX0_IRQHandler(void)
 {
   /* USER CODE BEGIN CAN2_RX0_IRQn 0 */
-	CAN_Rx_Interrupt_Handle(&hcan2, CAN_RX_FIFO0);
+	can_rx_interrupt(&hcan2, CAN_RX_FIFO0);
   /* USER CODE END CAN2_RX0_IRQn 0 */
   HAL_CAN_IRQHandler(&hcan2);
   /* USER CODE BEGIN CAN2_RX0_IRQn 1 */
@@ -277,7 +277,7 @@ void CAN2_RX0_IRQHandler(void)
 void CAN2_RX1_IRQHandler(void)
 {
   /* USER CODE BEGIN CAN2_RX1_IRQn 0 */
-	CAN_Rx_Interrupt_Handle(&hcan2, CAN_RX_FIFO1);
+	can_rx_interrupt(&hcan2, CAN_RX_FIFO1);
   /* USER CODE END CAN2_RX1_IRQn 0 */
   HAL_CAN_IRQHandler(&hcan2);
   /* USER CODE BEGIN CAN2_RX1_IRQn 1 */

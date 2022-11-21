@@ -21,7 +21,16 @@
 #include "can.h"
 
 /* USER CODE BEGIN 0 */
-extern message_queue_t CAN1_Tx_Queue, CAN2_Tx_Queue;
+#include <QUTMS_can.h>
+#include "iwdg.h"
+
+message_queue_t CAN1_Rx;
+message_queue_t CAN2_Rx;
+message_queue_t CAN1_Tx;
+message_queue_t CAN2_Tx;
+
+uint32_t txMailbox_CAN1 = 0;
+uint32_t txMailbox_CAN2 = 0;
 
 /* USER CODE END 0 */
 
@@ -40,10 +49,10 @@ void MX_CAN1_Init(void)
 
   /* USER CODE END CAN1_Init 1 */
   hcan1.Instance = CAN1;
-  hcan1.Init.Prescaler = 2;
+  hcan1.Init.Prescaler = 4;
   hcan1.Init.Mode = CAN_MODE_NORMAL;
   hcan1.Init.SyncJumpWidth = CAN_SJW_1TQ;
-  hcan1.Init.TimeSeg1 = CAN_BS1_13TQ;
+  hcan1.Init.TimeSeg1 = CAN_BS1_12TQ;
   hcan1.Init.TimeSeg2 = CAN_BS2_2TQ;
   hcan1.Init.TimeTriggeredMode = DISABLE;
   hcan1.Init.AutoBusOff = DISABLE;
@@ -75,7 +84,7 @@ void MX_CAN2_Init(void)
   hcan2.Init.Prescaler = 2;
   hcan2.Init.Mode = CAN_MODE_NORMAL;
   hcan2.Init.SyncJumpWidth = CAN_SJW_1TQ;
-  hcan2.Init.TimeSeg1 = CAN_BS1_13TQ;
+  hcan2.Init.TimeSeg1 = CAN_BS1_12TQ;
   hcan2.Init.TimeSeg2 = CAN_BS2_2TQ;
   hcan2.Init.TimeTriggeredMode = DISABLE;
   hcan2.Init.AutoBusOff = DISABLE;
@@ -230,10 +239,10 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef* canHandle)
 
 void CAN_setup( void )
 {
-	queue_init(&CAN1_Passthrough, sizeof(CAN_Generic_t));
-	queue_init(&CAN2_Passthrough, sizeof(CAN_Generic_t));
-	queue_init(&CAN1_Tx_Queue, sizeof(CAN_Generic_t));
-	queue_init(&CAN2_Tx_Queue, sizeof(CAN_Generic_t));
+	queue_init(&CAN1_Rx, sizeof(CAN_MSG_Generic_t));
+	queue_init(&CAN2_Rx, sizeof(CAN_MSG_Generic_t));
+	queue_init(&CAN1_Tx, sizeof(CAN_MSG_Generic_t));
+	queue_init(&CAN2_Tx, sizeof(CAN_MSG_Generic_t));
 
 	if (HAL_CAN_Start(&hcan1) != HAL_OK) {
 		Error_Handler();
@@ -249,12 +258,11 @@ void CAN_setup( void )
 	GLVFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
 	GLVFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
 	GLVFilterConfig.FilterIdHigh = 0x0000;
-	GLVFilterConfig.FilterIdLow = 0x0000;
+	GLVFilterConfig.FilterIdLow = 0x0001;
 	GLVFilterConfig.FilterMaskIdHigh = 0x0000;
-	GLVFilterConfig.FilterMaskIdLow = 0x0000;
+	GLVFilterConfig.FilterMaskIdLow = 0x0001;
 	GLVFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0;
 	GLVFilterConfig.FilterActivation = ENABLE;
-	GLVFilterConfig.SlaveStartFilterBank = 14;
 
 	if (HAL_CAN_ConfigFilter(&hcan1, &GLVFilterConfig) != HAL_OK) {
 		Error_Handler();
@@ -266,12 +274,12 @@ void CAN_setup( void )
 	HVFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
 	HVFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
 	HVFilterConfig.FilterIdHigh = 0x0000;
-	HVFilterConfig.FilterIdLow = 0x0000;
+	HVFilterConfig.FilterIdLow = 0x0001;
 	HVFilterConfig.FilterMaskIdHigh = 0x0000;
-	HVFilterConfig.FilterMaskIdLow = 0x0000;
+	HVFilterConfig.FilterMaskIdLow = 0x0001;
 	HVFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0;
 	HVFilterConfig.FilterActivation = ENABLE;
-	HVFilterConfig.SlaveStartFilterBank = 14;
+
 	if (HAL_CAN_ConfigFilter(&hcan2, &HVFilterConfig) != HAL_OK) {
 		Error_Handler();
 	}
@@ -306,92 +314,127 @@ void CAN_setup( void )
 
 }
 
+HAL_StatusTypeDef send_can_msg(CAN_HandleTypeDef *hcan, CAN_TxHeaderTypeDef *pHeader, uint8_t aData[]) {
+	HAL_StatusTypeDef result;
 
-void CAN_Rx_Interrupt_Handle(CAN_HandleTypeDef *hcan, int fifo)
-{
+	uint32_t *pTxMailbox = NULL;
+	if (hcan == &hcan1) {
+		pTxMailbox = &txMailbox_CAN1;
+	}
+	else if (hcan == &hcan2) {
+		pTxMailbox = &txMailbox_CAN2;
+	}
+
+	if (HAL_CAN_GetTxMailboxesFreeLevel(hcan) > 0) {
+		result = HAL_CAN_AddTxMessage(hcan, pHeader, aData, pTxMailbox);
+	}
+	else {
+		// unable to send, queue for later
+		CAN_MSG_Generic_t msg;
+		msg.ID = pHeader->IDE == CAN_ID_EXT ? pHeader->ExtId : pHeader->StdId;
+		msg.ID_TYPE = pHeader->IDE == CAN_ID_EXT ? 1 : 0;
+		msg.DLC = pHeader->DLC;
+		for (int i = 0; i < msg.DLC; i++) {
+			msg.data[i] = aData[i];
+		}
+		msg.hcan = hcan;
+
+		if (hcan == &hcan1) {
+			queue_add(&CAN1_Tx, &msg);
+		}
+		else if (hcan == &hcan2) {
+			queue_add(&CAN2_Tx, &msg);
+		}
+
+	}
+
+	return result;
+}
+
+void can_tx_interrupt(CAN_HandleTypeDef *hcan) {
+	// refresh watchdog when tx occurs
+	// TODO:
+	HAL_IWDG_Refresh(&hiwdg);
+
+	//__disable_irq();
+	CAN_MSG_Generic_t msg;
+	uint32_t *pTxMailbox;
+
+	if (hcan == &hcan2) {
+		pTxMailbox = &txMailbox_CAN2;
+		if (!queue_empty(&CAN2_Tx)) {
+			// queue isnt empty, so try and send
+
+			if (HAL_CAN_GetTxMailboxesFreeLevel(&hcan2) > 0) {
+				// confirm free spot -> grab message off queue
+				queue_next(&CAN2_Tx, &msg);
+			}
+			else {
+				// no free space, do nothing
+				return;
+			}
+		}
+		else {
+			// nothing in queue do nothing
+			return;
+		}
+	}
+	else if (hcan == &hcan1) {
+		pTxMailbox = &txMailbox_CAN1;
+		if (!queue_empty(&CAN1_Tx)) {
+			// queue isnt empty, so try and send
+
+			if (HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) > 0) {
+				// confirm free spot -> grab message off queue
+				queue_next(&CAN1_Tx, &msg);
+			}
+			else {
+				// no free space, do nothing
+				return;
+			}
+		}
+		else {
+			// nothing in queue do nothing
+			return;
+		}
+	}
+
+	CAN_TxHeaderTypeDef header;
+	header.ExtId = msg.ID;
+	header.StdId = msg.ID;
+	header.IDE = msg.ID_TYPE == 1 ? CAN_ID_EXT : CAN_ID_STD;
+	header.RTR = CAN_RTR_DATA;
+	header.DLC = msg.DLC;
+
+	HAL_CAN_AddTxMessage(hcan, &header, msg.data, pTxMailbox);
+	//__enable_irq();
+}
+
+void can_rx_interrupt(CAN_HandleTypeDef *hcan, int fifo) {
 	__disable_irq();
 
-	// Iterate over the CAN FIFO buffer, adding all CAN messages to the CAN Queue.
-	CAN_Generic_t msg;
-
-	//uint8_t vesc_ID;
-	//uint8_t vesc_type_ID;
+	CAN_MSG_Generic_t msg;
+	CAN_RxHeaderTypeDef header;
 
 	while (HAL_CAN_GetRxFifoFillLevel(hcan, fifo) > 0) {
-		if (HAL_CAN_GetRxMessage(hcan, fifo, &(msg.header), msg.data)
-				!= HAL_OK) {
-			//printf("Failed to recieve good can message\r\n");
+		if (HAL_CAN_GetRxMessage(hcan, fifo, &header, msg.data) != HAL_OK) {
+
 		}
+		else {
+			msg.hcan = hcan;
+			msg.ID = header.IDE == CAN_ID_EXT ? header.ExtId : header.StdId;
+			msg.ID_TYPE = header.IDE == CAN_ID_EXT ? 1 : 0;
+			msg.DLC = header.DLC;
+			msg.timestamp = HAL_GetTick();
 
-		if (hcan == &hcan1) { // passing
-			//vesc_ID = (msg.header.ExtId & 0xFF);
-			//vesc_type_ID = msg.header.ExtId >> 8;
-
-			// check that this is actually a VESC message
-			//if (vesc_type_ID <= VESC_CAN_PACKET_BMS_SOC_SOH_TEMP_STAT && vesc_ID <= 4) {
-			queue_add(&CAN2_Passthrough, &msg);
-			//}
-		} else if (hcan == &hcan2) {
-			queue_add(&CAN1_Passthrough, &msg);
+			if (hcan == &hcan1) {
+				queue_add(&CAN1_Rx, &msg);
+			} else {
+				queue_add(&CAN2_Rx, &msg);
+			}
 		}
 	}
 	__enable_irq();
 }
-
-/**
- * CAN Tx interrupt deals with more CAN tx data than Mailboxes available
- */
-
-void CAN1_Tx_Interrupt_Handle(CAN_HandleTypeDef *hcan)
-{
-	__disable_irq();
-
-	CAN_Generic_t msg;
-	uint32_t TxMailbox;
-	CAN_TxHeaderTypeDef Header;
-
-	if(!queue_empty(&CAN1_Tx_Queue)) // transmission queue is not empty
-	{
-		queue_next(&CAN1_Tx_Queue, (void *)&msg); // grab first element in queue
-		// setting up the header for CAN
-		Header.DLC = msg.header.DLC;
-		Header.RTR = CAN_RTR_DATA;
-		Header.IDE = msg.header.IDE == 1 ? CAN_ID_EXT : CAN_ID_STD;
-		Header.StdId = msg.header.StdId;
-		Header.ExtId = msg.header.ExtId;
-		// Adding message to mailbox
-		HAL_CAN_AddTxMessage((CAN_HandleTypeDef *)msg.hcan, &Header, msg.data, &TxMailbox);
-	}
-
-	__enable_irq();
-
-}
-
-
-void CAN2_Tx_Interrupt_Handle(CAN_HandleTypeDef *hcan)
-{
-	__disable_irq();
-
-	CAN_Generic_t msg;
-	uint32_t TxMailbox;
-	CAN_TxHeaderTypeDef Header;
-
-	if(!queue_empty(&CAN2_Tx_Queue)) // transmission queue is not empty
-	{
-		queue_next(&CAN2_Tx_Queue, (void *)&msg); // grab first element in queue
-		// setting up the header for CAN
-		Header.DLC = msg.header.DLC;
-		Header.RTR = CAN_RTR_DATA;
-		Header.IDE = msg.header.IDE == 1 ? CAN_ID_EXT : CAN_ID_STD;
-		Header.StdId = msg.header.StdId;
-		Header.ExtId = msg.header.ExtId;
-		// Adding message to mailbox
-		HAL_CAN_AddTxMessage((CAN_HandleTypeDef *)msg.hcan, &Header, msg.data, &TxMailbox);
-	}
-
-	__enable_irq();
-
-}
-
 
 /* USER CODE END 1 */
