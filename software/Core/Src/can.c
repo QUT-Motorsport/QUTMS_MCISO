@@ -51,8 +51,8 @@ void MX_CAN1_Init(void) {
 	hcan1.Init.Prescaler = 4;
 	hcan1.Init.Mode = CAN_MODE_NORMAL;
 	hcan1.Init.SyncJumpWidth = CAN_SJW_1TQ;
-	hcan1.Init.TimeSeg1 = CAN_BS1_12TQ;
-	hcan1.Init.TimeSeg2 = CAN_BS2_2TQ;
+	hcan1.Init.TimeSeg1 = CAN_BS1_8TQ;
+	hcan1.Init.TimeSeg2 = CAN_BS2_1TQ;
 	hcan1.Init.TimeTriggeredMode = DISABLE;
 	hcan1.Init.AutoBusOff = DISABLE;
 	hcan1.Init.AutoWakeUp = DISABLE;
@@ -81,8 +81,8 @@ void MX_CAN2_Init(void) {
 	hcan2.Init.Prescaler = 2;
 	hcan2.Init.Mode = CAN_MODE_NORMAL;
 	hcan2.Init.SyncJumpWidth = CAN_SJW_1TQ;
-	hcan2.Init.TimeSeg1 = CAN_BS1_12TQ;
-	hcan2.Init.TimeSeg2 = CAN_BS2_2TQ;
+	hcan2.Init.TimeSeg1 = CAN_BS1_8TQ;
+	hcan2.Init.TimeSeg2 = CAN_BS2_1TQ;
 	hcan2.Init.TimeTriggeredMode = DISABLE;
 	hcan2.Init.AutoBusOff = DISABLE;
 	hcan2.Init.AutoWakeUp = DISABLE;
@@ -343,7 +343,7 @@ HAL_StatusTypeDef send_can_msg(CAN_HandleTypeDef *hcan,
 
 void can_tx_interrupt(CAN_HandleTypeDef *hcan) {
 	// refresh watchdog when tx occurs
-	HAL_IWDG_Refresh(&hiwdg);
+	//HAL_IWDG_Refresh(&hiwdg);
 
 	//__disable_irq();
 	CAN_MSG_Generic_t msg;
