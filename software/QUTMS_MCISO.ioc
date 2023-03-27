@@ -1,10 +1,10 @@
 #MicroXplorer Configuration settings - do not modify
 CAN1.BS1=CAN_BS1_8TQ
-CAN1.CalculateBaudRate=500000
-CAN1.CalculateTimeBit=2000
-CAN1.CalculateTimeQuantum=200.0
+CAN1.CalculateBaudRate=1000000
+CAN1.CalculateTimeBit=1000
+CAN1.CalculateTimeQuantum=100.0
 CAN1.IPParameters=CalculateTimeQuantum,CalculateTimeBit,CalculateBaudRate,Prescaler,BS1
-CAN1.Prescaler=4
+CAN1.Prescaler=2
 CAN2.BS1=CAN_BS1_8TQ
 CAN2.CalculateBaudRate=1000000
 CAN2.CalculateTimeBit=1000
