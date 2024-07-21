@@ -29,7 +29,7 @@ extern "C" {
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
-#include <queue.h>
+#include <message_queue.h>
 /* USER CODE END Includes */
 
 extern CAN_HandleTypeDef hcan1;
